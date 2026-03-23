@@ -203,6 +203,7 @@
       background: linear-gradient(180deg, #eef4fb 0%, #f8fbff 100%);
       color: var(--text);
       border-color: var(--line);
+      padding: 24px;
     }
     .story-card.soft { background: #f8fafc; }
     .story-card.accent { background: linear-gradient(180deg, #eef4fb, #f8fbff); }
@@ -301,11 +302,11 @@
           <div class="story-card dark">
             <div class="story-kicker">Infografía central</div>
             <h4>Del camino al nuevo equilibrio</h4>
-            <svg viewBox="0 0 760 520" class="model-svg" aria-label="Cadena causal del modelo en ruta vertical">
+            <svg viewBox="0 0 980 760" class="model-svg" aria-label="Cadena causal del modelo en ruta vertical limpia">
               <defs>
                 <linearGradient id="g1" x1="0" x2="1">
                   <stop offset="0%" stop-color="#dbeafe"></stop>
-                  <stop offset="100%" stop-color="#bfdbfe"></stop>
+                  <stop offset="100%" stop-color="#cbd5e1"></stop>
                 </linearGradient>
                 <linearGradient id="g2" x1="0" x2="1">
                   <stop offset="0%" stop-color="#dcfce7"></stop>
@@ -321,54 +322,50 @@
                 </linearGradient>
               </defs>
 
-              <path d="M130 96 C198 96, 210 96, 250 148 S330 230, 390 286 S468 372, 512 404" fill="none" stroke="rgba(100,116,139,0.45)" stroke-width="10" stroke-linecap="round" stroke-dasharray="10 12"></path>
+              <path d="M96 84 L96 610" fill="none" stroke="#d7dee8" stroke-width="6" stroke-linecap="round"></path>
 
-              <circle cx="130" cy="96" r="34" fill="url(#g1)"></circle>
-              <circle cx="130" cy="96" r="24" fill="rgba(15,23,42,0.9)"></circle>
-              <text x="130" y="104" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">1</text>
-              <rect x="186" y="52" rx="24" ry="24" width="410" height="104" fill="url(#g1)"></rect>
-              <foreignObject x="214" y="60" width="360" height="88">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
-                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Mejora del corredor</div>
-                  <div style="font-size:13px;line-height:1.45;color:#334155;">Más proporción de carreteras principales,<br/>puentes y conexiones estratégicas.</div>
+              <circle cx="96" cy="146" r="38" fill="#f8fafc" stroke="#c8d2de" stroke-width="5"></circle>
+              <text x="96" y="156" text-anchor="middle" style="font-size:22px;font-weight:900;fill:#0f172a;">1</text>
+              <rect x="160" y="92" rx="26" ry="26" width="620" height="110" fill="url(#g1)"></rect>
+              <foreignObject x="190" y="114" width="570" height="66">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:66px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:20px;line-height:1.2;margin-bottom:8px;">Mejora del corredor</div>
+                  <div style="font-size:14px;line-height:1.45;color:#334155;">Más proporción de carreteras principales, puentes y conexiones estratégicas.</div>
                 </div>
               </foreignObject>
 
-              <circle cx="252" cy="190" r="34" fill="url(#g2)"></circle>
-              <circle cx="252" cy="190" r="24" fill="rgba(15,23,42,0.9)"></circle>
-              <text x="252" y="198" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">2</text>
-              <rect x="308" y="146" rx="24" ry="24" width="420" height="104" fill="url(#g2)"></rect>
-              <foreignObject x="336" y="154" width="370" height="88">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
-                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Caen costos de transporte</div>
-                  <div style="font-size:13px;line-height:1.45;color:#334155;">Rutas más baratas hacia puertos, mercados<br/>y cruces internacionales.</div>
+              <circle cx="96" cy="298" r="38" fill="#f8fafc" stroke="#c8d2de" stroke-width="5"></circle>
+              <text x="96" y="308" text-anchor="middle" style="font-size:22px;font-weight:900;fill:#0f172a;">2</text>
+              <rect x="160" y="242" rx="26" ry="26" width="560" height="110" fill="url(#g2)"></rect>
+              <foreignObject x="190" y="264" width="510" height="66">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:66px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:20px;line-height:1.2;margin-bottom:8px;">Caen costos de transporte</div>
+                  <div style="font-size:14px;line-height:1.45;color:#334155;">Rutas más baratas hacia puertos, mercados y cruces internacionales.</div>
                 </div>
               </foreignObject>
 
-              <circle cx="384" cy="304" r="34" fill="url(#g3)"></circle>
-              <circle cx="384" cy="304" r="24" fill="rgba(15,23,42,0.9)"></circle>
-              <text x="384" y="312" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">3</text>
-              <rect x="440" y="260" rx="24" ry="24" width="300" height="104" fill="url(#g3)"></rect>
-              <foreignObject x="468" y="268" width="250" height="88">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
-                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Responden agentes</div>
-                  <div style="font-size:13px;line-height:1.45;color:#334155;">Cambian ventas, precios, salarios,<br/>migración e innovación.</div>
+              <circle cx="96" cy="450" r="38" fill="#f8fafc" stroke="#c8d2de" stroke-width="5"></circle>
+              <text x="96" y="460" text-anchor="middle" style="font-size:22px;font-weight:900;fill:#0f172a;">3</text>
+              <rect x="160" y="394" rx="26" ry="26" width="470" height="110" fill="url(#g3)"></rect>
+              <foreignObject x="190" y="416" width="420" height="66">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:66px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:20px;line-height:1.2;margin-bottom:8px;">Responden agentes</div>
+                  <div style="font-size:14px;line-height:1.45;color:#334155;">Cambian ventas, precios, salarios, migración e innovación.</div>
                 </div>
               </foreignObject>
 
-              <circle cx="510" cy="420" r="34" fill="url(#g4)"></circle>
-              <circle cx="510" cy="420" r="24" fill="rgba(15,23,42,0.9)"></circle>
-              <text x="510" y="428" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">4</text>
-              <rect x="566" y="376" rx="24" ry="24" width="174" height="104" fill="url(#g4)"></rect>
-              <foreignObject x="590" y="384" width="126" height="88">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
-                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Nuevo equilibrio</div>
-                  <div style="font-size:13px;line-height:1.45;color:#334155;">PIB pc, bienestar,<br/>utilidad y comercio.</div>
+              <circle cx="96" cy="602" r="38" fill="#f8fafc" stroke="#c8d2de" stroke-width="5"></circle>
+              <text x="96" y="612" text-anchor="middle" style="font-size:22px;font-weight:900;fill:#0f172a;">4</text>
+              <rect x="160" y="546" rx="26" ry="26" width="300" height="110" fill="url(#g4)"></rect>
+              <foreignObject x="190" y="568" width="250" height="66">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:66px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:20px;line-height:1.2;margin-bottom:8px;">Nuevo equilibrio</div>
+                  <div style="font-size:14px;line-height:1.45;color:#334155;">PIB pc, bienestar, utilidad y comercio.</div>
                 </div>
               </foreignObject>
 
-              <rect x="44" y="452" rx="18" ry="18" width="672" height="48" fill="#e9eef6" stroke="#d6dee8"></rect>
-              <text x="66" y="482" class="svg-title light">Mercados conectados: Bienes • Trabajo • Tierra • Innovación • Migración</text>
+              <rect x="14" y="688" rx="24" ry="24" width="930" height="58" fill="#e9eef6" stroke="#d6dee8"></rect>
+              <text x="479" y="724" text-anchor="middle" class="svg-title light">Mercados conectados: Bienes • Trabajo • Tierra • Innovación • Migración</text>
             </svg>
           </div>
 

@@ -1,217 +1,907 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Impacto Económico – Ruta Capricornio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capricornio Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --accent: #111827;
+      --accent-2: #475569;
+      --ok: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #334155);
+      color: white;
+      padding: 32px;
+      border-radius: 28px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, .18);
+      margin-bottom: 24px;
+    }
+    .hero h1 { margin: 8px 0 10px; font-size: clamp(2rem, 4vw, 3rem); }
+    .hero p { margin: 0; color: #dbeafe; max-width: 900px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+    }
+    .controls { position: sticky; top: 20px; }
+    .controls h2, .section-title { margin: 0 0 6px; font-size: 1.15rem; }
+    .sub { margin: 0 0 16px; color: var(--muted); font-size: .95rem; }
+    label { display: block; font-weight: 600; font-size: .92rem; margin-bottom: 8px; }
+    input, select {
+      width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #cbd5e1;
+      background: white; color: var(--text); font: inherit;
+    }
+    .field { margin-bottom: 16px; }
+    .hint { font-size: .84rem; color: var(--muted); margin-top: 8px; }
+    .metrics {
+      display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0,1fr)); margin-bottom: 24px;
+    }
+    .metric-card .k { font-size: .9rem; color: var(--muted); }
+    .metric-card .v { font-size: 1.9rem; font-weight: 800; margin-top: 8px; }
+    .grid-2 { display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0,1fr)); margin-bottom: 24px; }
+    .chart-box { height: 360px; }
+    .tabs, .metric-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .tab, .metric-tab {
+      border: 1px solid #cbd5e1; background: #fff; padding: 10px 14px; border-radius: 999px;
+      cursor: pointer; font-weight: 600; color: var(--accent-2);
+    }
+    .tab.active, .metric-tab.active {
+      background: var(--accent); color: white; border-color: var(--accent);
+    }
+    .map-view {
+      overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: #edf2f7;
+    }
+    .map-view img { width: 100%; display: block; }
+    .legend-note { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+    .mini-grid {
+      display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-top: 18px;
+    }
+    .mini-item {
+      background: #f8fafc; border: 1px solid var(--line); border-radius: 16px; padding: 12px;
+    }
+    .mini-item .n { font-size: .85rem; color: var(--muted); }
+    .mini-item .x { font-size: 1.15rem; font-weight: 700; margin-top: 6px; }
+    .status {
+      padding: 14px; border-radius: 16px; background: #f8fafc; border: 1px solid var(--line); margin-top: 8px;
+      font-size: .95rem; color: var(--accent-2);
+    }
+    .footer-note { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .controls { position: static; }
+      .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .mini-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 14px; }
+      .hero { padding: 22px; border-radius: 22px; }
+      .metrics { grid-template-columns: 1fr; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
 
-<style>
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f4f7fb;
-  color: #1a2a3a;
-}
+    .hero-top { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .ghost-btn, .primary-btn {
+      border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: white;
+      padding: 11px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; font: inherit;
+      backdrop-filter: blur(6px);
+    }
+    .primary-btn { background:#fff; color:#0f172a; border-color:#fff; }
+    .meta-strip {
+      display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px; margin: 20px 0 24px;
+    }
+    .meta-box {
+      background:#eef4fb; border:1px solid var(--line); border-radius:18px; padding:16px;
+    }
+    .meta-box .eyebrow { font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+    .meta-box .big { margin-top:6px; font-size:1.1rem; font-weight:800; }
+    .model-intro { margin-bottom:24px; }
+    .model-grid { display:grid; gap:24px; grid-template-columns: 1.15fr .85fr; margin-bottom:24px; }
+    .info-steps { display:grid; gap:14px; }
+    .step {
+      display:grid; grid-template-columns: 56px 1fr; gap:14px; align-items:flex-start;
+      padding:14px; border:1px solid var(--line); border-radius:18px; background:#f8fafc;
+    }
+    .step-num {
+      width:56px; height:56px; border-radius:18px; background:#dbeafe; display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:1.2rem; color:#0f172a;
+    }
+    .step h4 { margin:0 0 6px; font-size:1rem; }
+    .step p { margin:0; color:var(--accent-2); line-height:1.5; }
+    .flow-card { background:linear-gradient(180deg,#f8fbff,#eef4fb); }
+    .flow {
+      display:flex; flex-direction:column; gap:12px; margin-top:14px;
+    }
+    .flow-node {
+      border:1px solid var(--line); background:#fff; border-radius:18px; padding:14px 16px; position:relative;
+    }
+    .flow-node:not(:last-child)::after {
+      content:'↓'; position:absolute; left:50%; bottom:-22px; transform:translateX(-50%); color:#64748b; font-weight:700;
+    }
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { background:#e2e8f0; color:#0f172a; border-radius:999px; padding:8px 12px; font-size:.85rem; font-weight:700; }
+    .method-summary { margin-top:16px; padding:14px; border-left:4px solid #0f172a; background:#f8fafc; border-radius:0 14px 14px 0; color:#334155; }
+    .authors { margin-top:28px; }
+    .authors-grid { display:grid; grid-template-columns: 1.1fr 1fr; gap:16px; }
+    .author-line { color:#334155; line-height:1.6; }
+    .credits { margin-top:10px; color:#64748b; font-size:.92rem; }
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(15,23,42,.56); display:none; align-items:center; justify-content:center;
+      padding:24px; z-index:50;
+    }
+    .modal-backdrop.open { display:flex; }
+    .modal {
+      width:min(980px, 100%); max-height:88vh; overflow:auto; background:#fff; border-radius:28px; border:1px solid var(--line);
+      box-shadow:0 22px 70px rgba(15,23,42,.28); padding:24px;
+    }
+    .modal-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+    .close-btn {
+      border:none; background:#e2e8f0; color:#0f172a; width:40px; height:40px; border-radius:999px; cursor:pointer; font-size:1.2rem;
+    }
+    .note-list { display:grid; gap:12px; margin-top:14px; }
+    .note-item { border:1px solid var(--line); border-radius:16px; padding:14px; background:#fff; }
+    .footer-page { margin:28px 0 10px; color:#64748b; font-size:.92rem; text-align:center; }
+    @media (max-width: 1100px) {
+      .meta-strip, .model-grid, .authors-grid { grid-template-columns: 1fr; }
+    }
 
-/* ===== HERO ===== */
-.hero {
-  padding: 80px 40px;
-  background: linear-gradient(135deg, #1c2b3a, #2e4a6b);
-  color: white;
-}
+    .section-title.xl { font-size: clamp(1.45rem, 2.4vw, 2.2rem); margin-bottom: 10px; }
+    .sub.wide { max-width: 900px; }
+    .eyebrow-dark { font-size: .78rem; text-transform: uppercase; letter-spacing: .14em; color: #475569; margin-bottom: 10px; font-weight: 700; }
+    .outline-btn {
+      border: 1px solid var(--line); background: white; color: #0f172a; padding: 12px 16px; border-radius: 999px;
+      cursor: pointer; font-weight: 700; font: inherit; white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(15,23,42,.05);
+    }
+    .model-showcase {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 14px 34px rgba(15,23,42,.06);
+      margin-bottom: 24px;
+    }
+    .model-header {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
+    }
+    .story-grid {
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; margin-bottom: 18px;
+    }
+    .story-side { display: grid; gap: 18px; }
+    .story-card {
+      border-radius: 24px; padding: 20px; border: 1px solid var(--line); background: #fff;
+      box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    }
+    .story-card.dark {
+      background: linear-gradient(180deg, #eef4fb 0%, #f8fbff 100%);
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .story-card.soft { background: #f8fafc; }
+    .story-card.accent { background: linear-gradient(180deg, #eef4fb, #f8fbff); }
+    .story-kicker {
+      display: inline-flex; align-items: center; gap: 8px; font-size: .74rem; text-transform: uppercase;
+      letter-spacing: .14em; color: #64748b; font-weight: 800; margin-bottom: 10px;
+    }
+    .story-card.dark .story-kicker { color: #64748b; }
+    .story-card h4 { margin: 0 0 12px; font-size: 1.2rem; }
+    .model-svg { width: 100%; height: auto; display: block; }
+    .svg-title { font-size: 14px; font-weight: 800; fill: #0f172a; }
+    .svg-copy { font-size: 13px; fill: #334155; }
+    .svg-title.light { fill: #0f172a; }
+    .svg-copy.light { fill: #475569; }
+    .icon-list { display: grid; gap: 12px; }
+    .icon-row {
+      display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start;
+      padding: 12px; border-radius: 16px; background: white; border: 1px solid var(--line);
+    }
+    .icon-row strong, .explain-card h4 { display: block; margin-bottom: 4px; }
+    .icon-row span { color: #475569; line-height: 1.45; font-size: .95rem; }
+    .icon-badge {
+      width: 44px; height: 44px; border-radius: 14px; background: #dbeafe; color: #0f172a;
+      display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem;
+    }
+    .pill-matrix { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .pill-matrix span {
+      display: inline-flex; padding: 9px 12px; border-radius: 999px; background: white; border: 1px solid var(--line);
+      font-size: .88rem; font-weight: 700; color: #0f172a;
+    }
+    .microcopy { color: #475569; margin: 14px 0 0; line-height: 1.5; }
+    .explain-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .explain-card {
+      background: white; border: 1px solid var(--line); border-radius: 20px; padding: 18px;
+      box-shadow: 0 8px 18px rgba(15,23,42,.03);
+    }
+    .explain-num {
+      display: inline-flex; min-width: 46px; height: 32px; padding: 0 10px; border-radius: 999px;
+      align-items: center; justify-content: center; background: #e0f2fe; color: #0f172a; font-weight: 800; margin-bottom: 10px;
+    }
+    .explain-card p { margin: 0; color: #475569; line-height: 1.55; }
+    @media (max-width: 1100px) {
+      .story-grid, .explain-grid { grid-template-columns: 1fr; }
+      .model-header { align-items: stretch; }
+    }
 
-.hero h1 {
-  font-size: 42px;
-  margin: 0 0 10px;
-}
-
-.hero p {
-  font-size: 18px;
-  opacity: 0.9;
-}
-
-/* ===== CONTENEDOR ===== */
-.section {
-  max-width: 1100px;
-  margin: auto;
-  padding: 60px 30px;
-}
-
-/* ===== INFOGRAFIA ===== */
-.subtitle {
-  letter-spacing: 2px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b7785;
-}
-
-.title {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 10px 0 40px;
-}
-
-/* TIMELINE */
-.timeline {
-  position: relative;
-  margin-left: 40px;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: #d5dde8;
-}
-
-/* STEP */
-.step {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: white;
-  border: 4px solid #d5dde8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-right: 20px;
-  z-index: 1;
-}
-
-.step-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 18px 24px;
-  border-radius: 18px;
-  min-height: 90px;
-  max-width: 620px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.step-box h4 {
-  margin: 0 0 6px;
-}
-
-.step-box p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* COLORES */
-.box1 { background: #dbe6f3; }
-.box2 { background: #cfe9d8; }
-.box3 { background: #f6e3a8; }
-.box4 { background: #dcd6ec; }
-
-/* MERCADOS */
-.markets-box {
-  margin-top: 60px;
-  background: #e4e9f1;
-  border-radius: 30px;
-  padding: 20px;
-  text-align: center;
-  font-weight: 600;
-}
-
-/* ===== BOTON METODOLOGIA ===== */
-.method-btn {
-  display: inline-block;
-  margin-top: 40px;
-  padding: 14px 22px;
-  background: #2e4a6b;
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.method-btn:hover {
-  background: #1c2b3a;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  background: #1c2b3a;
-  color: white;
-  padding: 30px;
-  text-align: center;
-  font-size: 13px;
-}
-</style>
+  </style>
 </head>
-
 <body>
-
-<!-- HERO -->
-<div class="hero">
-  <h1>Impacto Económico de la Ruta Capricornio</h1>
-  <p>Integración regional, reducción de costos y nuevos equilibrios económicos</p>
-</div>
-
-<!-- INFOGRAFIA -->
-<div class="section">
-
-  <div class="subtitle">INFOGRAFÍA CENTRAL</div>
-  <div class="title">Del camino al nuevo equilibrio</div>
-
-  <div class="timeline">
-
-    <div class="step">
-      <div class="circle">1</div>
-      <div class="step-box box1">
-        <h4>Mejora del corredor</h4>
-        <p>Más proporción de carreteras principales, puentes y conexiones estratégicas.</p>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div style="text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; opacity: .82;">Capricornio App</div>
+          <h1>Dashboard + calculadora del Corredor Capricornio</h1>
+          <p>Micrositio de resultados del modelo espacial para evaluar conectividad, mercado, migración y crecimiento territorial.</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="ghost-btn" id="openMethodology">Metodología del modelo</button>
+          <a class="primary-btn" href="#mapas" style="text-decoration:none; display:inline-flex; align-items:center;">Ver mapas</a>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="step">
-      <div class="circle">2</div>
-      <div class="step-box box2">
-        <h4>Caen costos de transporte</h4>
-        <p>Rutas más baratas hacia puertos, mercados y cruces internacionales.</p>
+    
+    <section class="meta-strip">
+      <div class="meta-box">
+        <div class="eyebrow">Qué hace el modelo</div>
+        <div class="big">Construye contrafactuales espaciales</div>
+        <div class="credits">Compara un equilibrio base con escenarios donde cambia la infraestructura, y rastrea cómo eso mueve comercio, población, salarios, productividad y bienestar.</div>
       </div>
-    </div>
-
-    <div class="step">
-      <div class="circle">3</div>
-      <div class="step-box box3">
-        <h4>Responden agentes</h4>
-        <p>Cambian ventas, precios, salarios, migración e innovación.</p>
+      <div class="meta-box">
+        <div class="eyebrow">Unidad de análisis</div>
+        <div class="big">1,697 economías territoriales</div>
+        <div class="credits">La lógica del reporte trabaja con celdas o territorios conectados por una red de transporte y calcula accesibilidad relativa entre lugares.</div>
       </div>
-    </div>
-
-    <div class="step">
-      <div class="circle">4</div>
-      <div class="step-box box4">
-        <h4>Nuevo equilibrio</h4>
-        <p>PIB pc, bienestar, utilidad y comercio.</p>
+      <div class="meta-box">
+        <div class="eyebrow">Pregunta central</div>
+        <div class="big">¿Qué cambia cuando mejora el corredor?</div>
+        <div class="credits">Se estima el valor de completar tramos faltantes y también el valor económico del corredor ya consolidado.</div>
       </div>
-    </div>
+    </section>
 
+    <section class="model-intro">
+      <div class="model-showcase">
+        <div class="model-header">
+          <div>
+            <div class="eyebrow-dark">EL MODELO, EN CLARO</div>
+            <h3 class="section-title xl">Cómo el corredor cambia la economía territorial</h3>
+            <p class="sub wide">Esta parte traduce el documento técnico a una lectura visual. La idea no es solo mostrar resultados, sino explicar el mecanismo del modelo: cómo una mejora vial altera costos, acceso a mercados, decisiones de hogares y firmas, y finalmente el equilibrio espacial.</p>
+          </div>
+          <button class="outline-btn" id="openMethodologySecondary">Abrir metodología completa</button>
+        </div>
+
+        <div class="story-grid">
+          <div class="story-card dark">
+            <div class="story-kicker">Infografía central</div>
+            <h4>Del camino al nuevo equilibrio</h4>
+            <svg viewBox="0 0 760 520" class="model-svg" aria-label="Cadena causal del modelo en ruta vertical">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#dbeafe"></stop>
+                  <stop offset="100%" stop-color="#bfdbfe"></stop>
+                </linearGradient>
+                <linearGradient id="g2" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#dcfce7"></stop>
+                  <stop offset="100%" stop-color="#bbf7d0"></stop>
+                </linearGradient>
+                <linearGradient id="g3" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#fef3c7"></stop>
+                  <stop offset="100%" stop-color="#fde68a"></stop>
+                </linearGradient>
+                <linearGradient id="g4" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#ede9fe"></stop>
+                  <stop offset="100%" stop-color="#ddd6fe"></stop>
+                </linearGradient>
+              </defs>
+
+              <path d="M130 96 C198 96, 210 96, 250 148 S330 230, 390 286 S468 372, 512 404" fill="none" stroke="rgba(100,116,139,0.45)" stroke-width="10" stroke-linecap="round" stroke-dasharray="10 12"></path>
+
+              <circle cx="130" cy="96" r="34" fill="url(#g1)"></circle>
+              <circle cx="130" cy="96" r="24" fill="rgba(15,23,42,0.9)"></circle>
+              <text x="130" y="104" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">1</text>
+              <rect x="186" y="52" rx="24" ry="24" width="410" height="104" fill="url(#g1)"></rect>
+              <foreignObject x="214" y="60" width="360" height="88">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Mejora del corredor</div>
+                  <div style="font-size:13px;line-height:1.45;color:#334155;">Más proporción de carreteras principales,<br/>puentes y conexiones estratégicas.</div>
+                </div>
+              </foreignObject>
+
+              <circle cx="252" cy="190" r="34" fill="url(#g2)"></circle>
+              <circle cx="252" cy="190" r="24" fill="rgba(15,23,42,0.9)"></circle>
+              <text x="252" y="198" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">2</text>
+              <rect x="308" y="146" rx="24" ry="24" width="420" height="104" fill="url(#g2)"></rect>
+              <foreignObject x="336" y="154" width="370" height="88">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Caen costos de transporte</div>
+                  <div style="font-size:13px;line-height:1.45;color:#334155;">Rutas más baratas hacia puertos, mercados<br/>y cruces internacionales.</div>
+                </div>
+              </foreignObject>
+
+              <circle cx="384" cy="304" r="34" fill="url(#g3)"></circle>
+              <circle cx="384" cy="304" r="24" fill="rgba(15,23,42,0.9)"></circle>
+              <text x="384" y="312" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">3</text>
+              <rect x="440" y="260" rx="24" ry="24" width="300" height="104" fill="url(#g3)"></rect>
+              <foreignObject x="468" y="268" width="250" height="88">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Responden agentes</div>
+                  <div style="font-size:13px;line-height:1.45;color:#334155;">Cambian ventas, precios, salarios,<br/>migración e innovación.</div>
+                </div>
+              </foreignObject>
+
+              <circle cx="510" cy="420" r="34" fill="url(#g4)"></circle>
+              <circle cx="510" cy="420" r="24" fill="rgba(15,23,42,0.9)"></circle>
+              <text x="510" y="428" text-anchor="middle" style="font-size:24px;font-weight:900;fill:#f8fafc;">4</text>
+              <rect x="566" y="376" rx="24" ry="24" width="174" height="104" fill="url(#g4)"></rect>
+              <foreignObject x="590" y="384" width="126" height="88">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="height:88px;display:flex;flex-direction:column;justify-content:center;font-family:Inter,system-ui,sans-serif;color:#0f172a;">
+                  <div style="font-weight:800;font-size:16px;line-height:1.25;margin-bottom:8px;">Nuevo equilibrio</div>
+                  <div style="font-size:13px;line-height:1.45;color:#334155;">PIB pc, bienestar,<br/>utilidad y comercio.</div>
+                </div>
+              </foreignObject>
+
+              <rect x="44" y="452" rx="18" ry="18" width="672" height="48" fill="#e9eef6" stroke="#d6dee8"></rect>
+              <text x="66" y="482" class="svg-title light">Mercados conectados: Bienes • Trabajo • Tierra • Innovación • Migración</text>
+            </svg>
+          </div>
+
+          <div class="story-side">
+            <div class="story-card soft">
+              <div class="story-kicker">Qué entra al modelo</div>
+              <h4>Capas de información</h4>
+              <div class="icon-list">
+                <div class="icon-row">
+                  <div class="icon-badge">▦</div>
+                  <div><strong>Grilla territorial</strong><span>Población inicial, actividad, salarios y productividad por lugar.</span></div>
+                </div>
+                <div class="icon-row">
+                  <div class="icon-badge">⇄</div>
+                  <div><strong>Red de transporte</strong><span>Carreteras, ferrocarril, ríos y rutas de menor costo entre pares de lugares.</span></div>
+                </div>
+                <div class="icon-row">
+                  <div class="icon-badge">⛭</div>
+                  <div><strong>Parámetros económicos</strong><span>Preferencias, comercio, movilidad y respuesta de firmas y hogares.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="story-card accent">
+              <div class="story-kicker">Qué sale del modelo</div>
+              <h4>Indicadores del dashboard</h4>
+              <div class="pill-matrix">
+                <span>GDP per capita</span>
+                <span>Población</span>
+                <span>Productividad</span>
+                <span>Salarios</span>
+                <span>Utilidad</span>
+                <span>Apertura comercial</span>
+                <span>Volumen de comercio</span>
+              </div>
+              <p class="microcopy">Los mapas que ves abajo son la traducción espacial de ese nuevo equilibrio.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="explain-grid">
+          <div class="explain-card">
+            <div class="explain-num">01</div>
+            <h4>Base espacial</h4>
+            <p>El reporte modela Sudamérica como una red de economías territoriales. Cada lugar compite y coopera con otros según su acceso relativo a la red.</p>
+          </div>
+          <div class="explain-card">
+            <div class="explain-num">02</div>
+            <h4>Contrafactual</h4>
+            <p>Se alteran celdas del corredor para representar mejoras viales o puentes. Eso cambia la fricción de transporte frente al escenario base.</p>
+          </div>
+          <div class="explain-card">
+            <div class="explain-num">03</div>
+            <h4>Ajuste económico</h4>
+            <p>Los menores costos modifican precios, especialización, acceso a demanda, relocalización de actividad y decisiones de migración.</p>
+          </div>
+          <div class="explain-card">
+            <div class="explain-num">04</div>
+            <h4>Lectura territorial</h4>
+            <p>Los efectos no son uniformes: ganan más los lugares con mejor acceso a nodos y corredores, y las fronteras pueden erosionar parte de esos beneficios.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+<section class="layout">
+      <aside class="card controls">
+        <h2>Parámetros</h2>
+        <p class="sub">Cambia escenario y supuestos para actualizar los resultados.</p>
+
+        <div class="field">
+          <label for="scenario">Escenario</label>
+          <select id="scenario"></select>
+        </div>
+
+        <div class="field">
+          <label for="investment">Inversión total (US$ millones)</label>
+          <input id="investment" type="number" />
+        </div>
+
+        <div class="field">
+          <label for="maintenance">Mantenimiento anual (US$ millones)</label>
+          <input id="maintenance" type="number" />
+        </div>
+
+        <div class="field">
+          <label for="borderPenalty">Penalización por fronteras: <span id="borderPenaltyLabel">0%</span></label>
+          <input id="borderPenalty" type="range" min="0" max="100" step="1" value="0" />
+          <div class="hint">Simula cuánto se erosionan los beneficios por demoras, costos o fricción fronteriza.</div>
+        </div>
+
+        <div class="status" id="selectedScenarioSummary"></div>
+        <div class="footer-note"></div>
+      </aside>
+
+      <main>
+        <section class="metrics" id="metrics"></section>
+
+        <section class="grid-2">
+          <div class="card">
+            <h3 class="section-title">Gráfico del escenario</h3>
+            <p class="sub">Impacto medio vs. máximo observado en cada variable.</p>
+            <div class="chart-box"><canvas id="radarChart"></canvas></div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title">Resultados por territorio</h3>
+            <p class="sub">Bienestar ajustado por territorio, con el castigo de frontera aplicado.</p>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-bottom:24px;">
+          <h3 class="section-title">Lectura rápida</h3>
+          <p class="sub">Resumen del escenario activo para usar en una presentación.</p>
+          <div class="mini-grid" id="miniMetrics"></div>
+          <div class="status" id="quickReading"></div>
+        </section>
+
+        <section class="card" id="mapas">
+          <h3 class="section-title">Mapas del corredor</h3>
+          <p class="sub">Selecciona una comparación y un indicador. Se muestran mapas como los que compartiste.</p>
+
+          <div class="tabs" id="comparisonTabs"></div>
+          <div class="metric-tabs" id="metricTabs"></div>
+
+          <div class="map-view">
+            <img id="mapImage" src="" alt="Mapa del corredor" />
+          </div>
+          <div class="legend-note" id="mapCaption"></div>
+        </section>
+      </main>
+    </section>
+
+    <section class="card authors">
+      <h3 class="section-title">Autores y equipo del reporte</h3>
+      <p class="sub">Créditos del documento base usado para esta visualización.</p>
+      <div class="authors-grid">
+        <div>
+          <div class="author-line"><strong>Research Team for this report:</strong> Mauro Alem (IADB Infrastructure Principal Specialist, Team Leader).</div>
+          <div class="author-line"><strong>Consultants:</strong> David Nagy (CREi), Julio Elías (UCEMA), Marlene Achury, Ignacio Penagos (Javeriana), Mariam Pena (UNAL).</div>
+          <div class="author-line"><strong>TC:</strong> RG-T4763 — <em>Analysis of the Economic Impact of Capricorn Integration Route</em>.</div>
+          <div class="author-line"><strong>TC Team Leader:</strong> Gabriel Sánchez (IADB Economics Principal Specialist, CSC/CSC).</div>
+        </div>
+        <div>
+          <div class="author-line"><strong>Sector:</strong> Regional Integration – Infrastructure.</div>
+          <div class="author-line"><strong>IADB Team:</strong> Arturo Galindo, Eduardo Cavallo, Julieta Abad, Leonel Borja, Esteban Diez, Eugenia Rivas, Alejandro Taddia y Diego Fasan.</div>
+          <div class="credits">Inter-American Development Bank, 2025.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-page">Visualización web basada en el documento de evaluación del Corredor Capricornio.</div>
   </div>
 
-  <div class="markets-box">
-    Mercados conectados: Bienes • Trabajo • Tierra • Innovación • Migración
+  <div class="modal-backdrop" id="methodologyModal" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3 class="section-title" style="font-size:1.35rem;">Metodología del modelo</h3>
+          <p class="sub" style="margin-bottom:0;">Resumen del enfoque económico-geográfico utilizado en el reporte.</p>
+        </div>
+        <button class="close-btn" id="closeMethodology" aria-label="Cerrar">×</button>
+      </div>
+      <div class="note-list">
+        <div class="note-item"><strong>1. Marco teórico.</strong> El estudio se apoya en modelos espaciales de equilibrio general inspirados en Allen y Arkolakis (2014) y extendidos con dinámica de crecimiento, innovación y migración por Desmet, Nagy y Rossi-Hansberg (2018).</div>
+        <div class="note-item"><strong>2. Resolución espacial.</strong> La economía se representa en celdas geográficas comparables. El reporte menciona una malla de 100 km × 100 km en la literatura de referencia y estima trayectorias para 1,697 economías territoriales en Sudamérica.</div>
+        <div class="note-item"><strong>3. Datos de transporte.</strong> Para cada lugar se mide disponibilidad de carreteras, ferrocarriles y vías fluviales, y se construyen rutas de menor costo entre pares de ubicaciones.</div>
+        <div class="note-item"><strong>4. Contrafactuals.</strong> El escenario principal de completamiento aumenta la proporción de carreteras principales en celdas específicas del corredor e incorpora puentes fronterizos y mejoras viales; el escenario alternativo elimina tramos del corredor para medir el valor del activo consolidado.</div>
+        <div class="note-item"><strong>5. Qué sale del modelo.</strong> El nuevo equilibrio produce estimaciones de comercio, población, PIB per cápita, productividad, salarios y bienestar monetizado, mostrando efectos promedio y distribución espacial de ganadores y rezagados.</div>
+        <div class="note-item"><strong>6. Lectura de los mapas.</strong> Los mapas muestran dónde se concentran los impactos. En el reporte, los beneficios de completar los faltantes se concentran cerca de Salta y Boquerón, mientras que el valor del corredor consolidado aparece mucho más fuerte en el norte argentino, Chile y Brasil.</div>
+        <div class="note-item"><strong>7. Fronteras importan.</strong> El reporte muestra que, al incorporar costos de cruce fronterizo, los beneficios se erosionan con fuerza, especialmente en ubicaciones cercanas a la frontera; por eso este dashboard incluye un control de penalización fronteriza.</div>
+      </div>
+    </div>
   </div>
 
-  <a href="#" class="method-btn">Ver metodología del modelo</a>
+  <script>
+    const scenarios = {
+      completion: {
+        label: 'Completar tramos faltantes',
+        title: 'Completar tramos faltantes del CC',
+        annualWelfare: 48.1,
+        investment: 697.5,
+        maintenance: 27.9,
+        roi: 2.9,
+        trade: 1.34,
+        population: 1.34,
+        gdp: 1.1,
+        productivity: 0.39,
+        wages: 0.29,
+        maxTrade: 5.85,
+        maxPopulation: 5.85,
+        maxGdp: 4.8,
+        maxProductivity: 1.68,
+        maxWages: 1.24,
+        areas: [
+          { name: 'Norte de Argentina', value: 21.6 },
+          { name: 'Norte de Chile', value: 12.2 },
+          { name: 'Paraguay central', value: 19.5 },
+          { name: 'Sudoeste de Brasil', value: 0.2 },
+          { name: 'Sur de Bolivia', value: -5.4 },
+          { name: 'Sur de Perú', value: 0.0 },
+        ],
+      },
+      corridor: {
+        label: 'Valor del corredor consolidado',
+        title: 'Valor del corredor consolidado',
+        annualWelfare: 7028.9,
+        investment: 7950,
+        maintenance: 318,
+        roi: 84.4,
+        trade: 11.2,
+        population: 8.44,
+        gdp: 7.5,
+        productivity: 2.57,
+        wages: 1.97,
+        maxTrade: 47.9,
+        maxPopulation: 39.43,
+        maxGdp: 32.36,
+        maxProductivity: 11.44,
+        maxWages: 8.49,
+        areas: [
+          { name: 'Norte de Argentina', value: 1433.3 },
+          { name: 'Norte de Chile', value: 554.3 },
+          { name: 'Paraguay', value: 57.3 },
+          { name: 'Sudoeste de Brasil', value: 4945.9 },
+          { name: 'Sur de Bolivia', value: 31.4 },
+          { name: 'Sur de Perú', value: 6.7 },
+        ],
+      }
+    };
 
-</div>
+    const mapLibrary = {
+      'zeros-base': {
+        label: 'Zeros → Base',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-base-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-base-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-base-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-base-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-base-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-base-utilidad.jpg' },
+          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-zeros-a-base-variacion-volumen-de-comercio.jpg' },
+        }
+      },
+      'base-capricornio': {
+        label: 'Base → Capricornio',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-base-a-capricornio-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-base-a-capricornio-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-base-a-capricornio-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-base-a-capricornio-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-base-a-capricornio-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-base-a-capricornio-utilidad.jpg' },
+          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-base-a-capricornio-variacion-volumen-de-comercio.jpg' },
+        }
+      },
+      'zeros-capricornio': {
+        label: 'Zeros → Capricornio',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-capricornio-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-capricornio-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-capricornio-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-capricornio-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-capricornio-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-capricornio-utilidad.jpg' },
+        }
+      }
+    };
 
-<!-- FOOTER -->
-<div class="footer">
-  Mauro Alem · David Nagy · Julio Elías · Marlene Achury · Ignacio Penagos · Mariam Pena
-</div>
+    const scenarioEl = document.getElementById('scenario');
+    const investmentEl = document.getElementById('investment');
+    const maintenanceEl = document.getElementById('maintenance');
+    const borderPenaltyEl = document.getElementById('borderPenalty');
+    const borderPenaltyLabel = document.getElementById('borderPenaltyLabel');
+    const metricsEl = document.getElementById('metrics');
+    const miniMetricsEl = document.getElementById('miniMetrics');
+    const selectedScenarioSummary = document.getElementById('selectedScenarioSummary');
+    const quickReading = document.getElementById('quickReading');
+    const comparisonTabs = document.getElementById('comparisonTabs');
+    const metricTabs = document.getElementById('metricTabs');
+    const mapImage = document.getElementById('mapImage');
+    const mapCaption = document.getElementById('mapCaption');
+    const openMethodologySecondary = document.getElementById('openMethodologySecondary');
 
+    let currentScenario = 'completion';
+    let currentComparison = 'base-capricornio';
+    let currentMetric = 'gdp';
+
+    Object.entries(scenarios).forEach(([key, item]) => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = item.label;
+      scenarioEl.appendChild(opt);
+    });
+
+    scenarioEl.value = currentScenario;
+    investmentEl.value = scenarios[currentScenario].investment;
+    maintenanceEl.value = scenarios[currentScenario].maintenance;
+
+    function fmtNumber(v, digits = 1) {
+      return Number(v).toLocaleString('es-ES', { maximumFractionDigits: digits });
+    }
+
+    function computeState() {
+      const s = scenarios[currentScenario];
+      const investment = Number(investmentEl.value) || 0;
+      const maintenance = Number(maintenanceEl.value) || 0;
+      const borderPenalty = Number(borderPenaltyEl.value) || 0;
+      const factor = Math.max(0, Math.min(100, borderPenalty)) / 100;
+      const annualWelfare = s.annualWelfare * (1 - factor);
+      const simpleAnnualReturn = investment > 0 ? (annualWelfare / investment) * 100 : 0;
+      const netAnnualBenefit = annualWelfare - maintenance;
+      const paybackYears = netAnnualBenefit > 0 ? investment / netAnnualBenefit : null;
+      const adjustedAreas = s.areas.map(a => ({ ...a, adjusted: a.value * (1 - factor) }));
+      return { s, investment, maintenance, borderPenalty, annualWelfare, simpleAnnualReturn, netAnnualBenefit, paybackYears, adjustedAreas };
+    }
+
+    function renderMetricCards(state) {
+      const cards = [
+        { label: 'Bienestar anual ajustado', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
+        { label: 'Retorno anual simple', value: `${fmtNumber(state.simpleAnnualReturn, 2)}%` },
+        { label: 'Beneficio anual neto', value: `US$ ${fmtNumber(state.netAnnualBenefit)} M` },
+        { label: 'Payback estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
+      ];
+      metricsEl.innerHTML = cards.map(c => `
+        <div class="card metric-card">
+          <div class="k">${c.label}</div>
+          <div class="v">${c.value}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderMiniMetrics(state) {
+      const items = [
+        ['Trade', state.s.trade],
+        ['Población', state.s.population],
+        ['PIB', state.s.gdp],
+        ['Productividad', state.s.productivity],
+        ['Salarios', state.s.wages],
+      ];
+      miniMetricsEl.innerHTML = items.map(([n,v]) => `
+        <div class="mini-item">
+          <div class="n">${n}</div>
+          <div class="x">${fmtNumber(v, 2)}%</div>
+        </div>
+      `).join('');
+
+      selectedScenarioSummary.innerHTML = `
+        <strong>${state.s.title}</strong><br>
+        ROI de referencia del reporte: <strong>${fmtNumber(state.s.roi, 2)}%</strong>.<br>
+        Bienestar anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
+      `;
+
+      quickReading.innerHTML = `
+        Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, el beneficio anual ajustado queda en
+        <strong>US$ ${fmtNumber(state.annualWelfare)} M</strong>. El beneficio neto anual es
+        <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong>
+        y el territorio más beneficiado en este set es
+        <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>.
+      `;
+    }
+
+    const radarCtx = document.getElementById('radarChart');
+    const barCtx = document.getElementById('barChart');
+
+    const radarChart = new Chart(radarCtx, {
+      type: 'radar',
+      data: { labels: [], datasets: [] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { r: { beginAtZero: true, grid: { color: '#e2e8f0' }, angleLines: { color: '#e2e8f0' }, pointLabels: { color: '#334155' } } }
+      }
+    });
+
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: { labels: [], datasets: [] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#334155' }, grid: { display: false } },
+          y: { ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } }
+        }
+      }
+    });
+
+    function renderCharts(state) {
+      radarChart.data.labels = ['Trade', 'Población', 'PIB', 'Productividad', 'Salarios'];
+      radarChart.data.datasets = [
+        {
+          label: 'Impacto medio',
+          data: [state.s.trade, state.s.population, state.s.gdp, state.s.productivity, state.s.wages],
+          borderColor: '#0f172a',
+          backgroundColor: 'rgba(15,23,42,.22)',
+          pointBackgroundColor: '#0f172a'
+        },
+        {
+          label: 'Máximo observado',
+          data: [state.s.maxTrade, state.s.maxPopulation, state.s.maxGdp, state.s.maxProductivity, state.s.maxWages],
+          borderColor: '#94a3b8',
+          backgroundColor: 'rgba(148,163,184,.18)',
+          pointBackgroundColor: '#94a3b8'
+        }
+      ];
+      radarChart.update();
+
+      barChart.data.labels = state.adjustedAreas.map(a => a.name);
+      barChart.data.datasets = [{
+        data: state.adjustedAreas.map(a => a.adjusted),
+        backgroundColor: state.adjustedAreas.map(a => a.adjusted >= 0 ? '#0f766e' : '#b91c1c'),
+        borderRadius: 10,
+      }];
+      barChart.update();
+    }
+
+    function renderComparisonTabs() {
+      comparisonTabs.innerHTML = '';
+      Object.entries(mapLibrary).forEach(([key, item]) => {
+        const btn = document.createElement('button');
+        btn.className = `tab ${key === currentComparison ? 'active' : ''}`;
+        btn.textContent = item.label;
+        btn.onclick = () => {
+          currentComparison = key;
+          const metrics = Object.keys(mapLibrary[currentComparison].metrics);
+          if (!metrics.includes(currentMetric)) currentMetric = metrics[0];
+      
+    const openMethodology = document.getElementById('openMethodology');
+    const closeMethodology = document.getElementById('closeMethodology');
+    const methodologyModal = document.getElementById('methodologyModal');
+
+    openMethodology.addEventListener('click', () => {
+      methodologyModal.classList.add('open');
+      methodologyModal.setAttribute('aria-hidden', 'false');
+    });
+    closeMethodology.addEventListener('click', () => {
+      methodologyModal.classList.remove('open');
+      methodologyModal.setAttribute('aria-hidden', 'true');
+    });
+    methodologyModal.addEventListener('click', (e) => {
+      if (e.target === methodologyModal) {
+        methodologyModal.classList.remove('open');
+        methodologyModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        methodologyModal.classList.remove('open');
+        methodologyModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    renderComparisonTabs();
+          renderMetricTabs();
+          renderMap();
+        };
+        comparisonTabs.appendChild(btn);
+      });
+    }
+
+    function renderMetricTabs() {
+      metricTabs.innerHTML = '';
+      Object.entries(mapLibrary[currentComparison].metrics).forEach(([key, item]) => {
+        const btn = document.createElement('button');
+        btn.className = `metric-tab ${key === currentMetric ? 'active' : ''}`;
+        btn.textContent = item.label;
+        btn.onclick = () => {
+          currentMetric = key;
+          renderMetricTabs();
+          renderMap();
+        };
+        metricTabs.appendChild(btn);
+      });
+    }
+
+    function renderMap() {
+      const mapData = mapLibrary[currentComparison].metrics[currentMetric];
+      mapImage.src = mapData.file;
+      mapImage.alt = `${mapLibrary[currentComparison].label} - ${mapData.label}`;
+      mapCaption.innerHTML = `<strong>${mapLibrary[currentComparison].label}</strong> · ${mapData.label}`;
+    }
+
+    function updateAll() {
+      borderPenaltyLabel.textContent = `${borderPenaltyEl.value}%`;
+      const state = computeState();
+      renderMetricCards(state);
+      renderMiniMetrics(state);
+      renderCharts(state);
+    }
+
+    scenarioEl.addEventListener('change', () => {
+      currentScenario = scenarioEl.value;
+      const s = scenarios[currentScenario];
+      investmentEl.value = s.investment;
+      maintenanceEl.value = s.maintenance;
+      borderPenaltyEl.value = 0;
+      updateAll();
+    });
+    investmentEl.addEventListener('input', updateAll);
+    maintenanceEl.addEventListener('input', updateAll);
+    borderPenaltyEl.addEventListener('input', updateAll);
+
+
+    const openMethodology = document.getElementById('openMethodology');
+    const closeMethodology = document.getElementById('closeMethodology');
+    const methodologyModal = document.getElementById('methodologyModal');
+
+    openMethodology.addEventListener('click', () => {
+      methodologyModal.classList.add('open');
+      methodologyModal.setAttribute('aria-hidden', 'false');
+    });
+    closeMethodology.addEventListener('click', () => {
+      methodologyModal.classList.remove('open');
+      methodologyModal.setAttribute('aria-hidden', 'true');
+    });
+    methodologyModal.addEventListener('click', (e) => {
+      if (e.target === methodologyModal) {
+        methodologyModal.classList.remove('open');
+        methodologyModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        methodologyModal.classList.remove('open');
+        methodologyModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    renderComparisonTabs();
+    renderMetricTabs();
+    renderMap();
+    updateAll();
+  </script>
 </body>
 </html>

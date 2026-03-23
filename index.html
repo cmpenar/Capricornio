@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capricornio Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --accent: #111827;
+      --accent-2: #475569;
+      --ok: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #334155);
+      color: white;
+      padding: 32px;
+      border-radius: 28px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, .18);
+      margin-bottom: 24px;
+    }
+    .hero h1 { margin: 8px 0 10px; font-size: clamp(2rem, 4vw, 3rem); }
+    .hero p { margin: 0; color: #dbeafe; max-width: 900px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+    }
+    .controls { position: sticky; top: 20px; }
+    .controls h2, .section-title { margin: 0 0 6px; font-size: 1.15rem; }
+    .sub { margin: 0 0 16px; color: var(--muted); font-size: .95rem; }
+    label { display: block; font-weight: 600; font-size: .92rem; margin-bottom: 8px; }
+    input, select {
+      width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #cbd5e1;
+      background: white; color: var(--text); font: inherit;
+    }
+    .field { margin-bottom: 16px; }
+    .hint { font-size: .84rem; color: var(--muted); margin-top: 8px; }
+    .metrics {
+      display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0,1fr)); margin-bottom: 24px;
+    }
+    .metric-card .k { font-size: .9rem; color: var(--muted); }
+    .metric-card .v { font-size: 1.9rem; font-weight: 800; margin-top: 8px; }
+    .grid-2 { display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0,1fr)); margin-bottom: 24px; }
+    .chart-box { height: 360px; }
+    .tabs, .metric-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .tab, .metric-tab {
+      border: 1px solid #cbd5e1; background: #fff; padding: 10px 14px; border-radius: 999px;
+      cursor: pointer; font-weight: 600; color: var(--accent-2);
+    }
+    .tab.active, .metric-tab.active {
+      background: var(--accent); color: white; border-color: var(--accent);
+    }
+    .map-view {
+      overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: #edf2f7;
+    }
+    .map-view img { width: 100%; display: block; }
+    .legend-note { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+    .mini-grid {
+      display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-top: 18px;
+    }
+    .mini-item {
+      background: #f8fafc; border: 1px solid var(--line); border-radius: 16px; padding: 12px;
+    }
+    .mini-item .n { font-size: .85rem; color: var(--muted); }
+    .mini-item .x { font-size: 1.15rem; font-weight: 700; margin-top: 6px; }
+    .status {
+      padding: 14px; border-radius: 16px; background: #f8fafc; border: 1px solid var(--line); margin-top: 8px;
+      font-size: .95rem; color: var(--accent-2);
+    }
+    .footer-note { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .controls { position: static; }
+      .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .mini-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 14px; }
+      .hero { padding: 22px; border-radius: 22px; }
+      .metrics { grid-template-columns: 1fr; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div style="text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; opacity: .82;">Capricornio App</div>
+      <h1>Dashboard + calculadora del Corredor Capricornio</h1>
+      <p>
+        HTML listo para GitHub Pages. Incluye calculadora, gráficos y una galería de mapas como los que mostraste,
+        organizada por comparación y por indicador.
+      </p>
+    </section>
+
+    <section class="layout">
+      <aside class="card controls">
+        <h2>Parámetros</h2>
+        <p class="sub">Cambia escenario y supuestos para actualizar los resultados.</p>
+
+        <div class="field">
+          <label for="scenario">Escenario</label>
+          <select id="scenario"></select>
+        </div>
+
+        <div class="field">
+          <label for="investment">Inversión total (US$ millones)</label>
+          <input id="investment" type="number" />
+        </div>
+
+        <div class="field">
+          <label for="maintenance">Mantenimiento anual (US$ millones)</label>
+          <input id="maintenance" type="number" />
+        </div>
+
+        <div class="field">
+          <label for="borderPenalty">Penalización por fronteras: <span id="borderPenaltyLabel">0%</span></label>
+          <input id="borderPenalty" type="range" min="0" max="100" step="1" value="0" />
+          <div class="hint">Simula cuánto se erosionan los beneficios por demoras, costos o fricción fronteriza.</div>
+        </div>
+
+        <div class="status" id="selectedScenarioSummary"></div>
+        <div class="footer-note">Puedes subir esto tal cual a GitHub Pages con el archivo <strong>index.html</strong> y la carpeta <strong>assets</strong>.</div>
+      </aside>
+
+      <main>
+        <section class="metrics" id="metrics"></section>
+
+        <section class="grid-2">
+          <div class="card">
+            <h3 class="section-title">Gráfico del escenario</h3>
+            <p class="sub">Impacto medio vs. máximo observado en cada variable.</p>
+            <div class="chart-box"><canvas id="radarChart"></canvas></div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title">Resultados por territorio</h3>
+            <p class="sub">Bienestar ajustado por territorio, con el castigo de frontera aplicado.</p>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-bottom:24px;">
+          <h3 class="section-title">Lectura rápida</h3>
+          <p class="sub">Resumen del escenario activo para usar en una presentación.</p>
+          <div class="mini-grid" id="miniMetrics"></div>
+          <div class="status" id="quickReading"></div>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">Mapas del corredor</h3>
+          <p class="sub">Selecciona una comparación y un indicador. Se muestran mapas como los que compartiste.</p>
+
+          <div class="tabs" id="comparisonTabs"></div>
+          <div class="metric-tabs" id="metricTabs"></div>
+
+          <div class="map-view">
+            <img id="mapImage" src="" alt="Mapa del corredor" />
+          </div>
+          <div class="legend-note" id="mapCaption"></div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    const scenarios = {
+      completion: {
+        label: 'Completar tramos faltantes',
+        title: 'Completar tramos faltantes del CC',
+        annualWelfare: 48.1,
+        investment: 697.5,
+        maintenance: 27.9,
+        roi: 2.9,
+        trade: 1.34,
+        population: 1.34,
+        gdp: 1.1,
+        productivity: 0.39,
+        wages: 0.29,
+        maxTrade: 5.85,
+        maxPopulation: 5.85,
+        maxGdp: 4.8,
+        maxProductivity: 1.68,
+        maxWages: 1.24,
+        areas: [
+          { name: 'Norte de Argentina', value: 21.6 },
+          { name: 'Norte de Chile', value: 12.2 },
+          { name: 'Paraguay central', value: 19.5 },
+          { name: 'Sudoeste de Brasil', value: 0.2 },
+          { name: 'Sur de Bolivia', value: -5.4 },
+          { name: 'Sur de Perú', value: 0.0 },
+        ],
+      },
+      corridor: {
+        label: 'Valor del corredor consolidado',
+        title: 'Valor del corredor consolidado',
+        annualWelfare: 7028.9,
+        investment: 7950,
+        maintenance: 318,
+        roi: 84.4,
+        trade: 11.2,
+        population: 8.44,
+        gdp: 7.5,
+        productivity: 2.57,
+        wages: 1.97,
+        maxTrade: 47.9,
+        maxPopulation: 39.43,
+        maxGdp: 32.36,
+        maxProductivity: 11.44,
+        maxWages: 8.49,
+        areas: [
+          { name: 'Norte de Argentina', value: 1433.3 },
+          { name: 'Norte de Chile', value: 554.3 },
+          { name: 'Paraguay', value: 57.3 },
+          { name: 'Sudoeste de Brasil', value: 4945.9 },
+          { name: 'Sur de Bolivia', value: 31.4 },
+          { name: 'Sur de Perú', value: 6.7 },
+        ],
+      }
+    };
+
+    const mapLibrary = {
+      'zeros-base': {
+        label: 'Zeros → Base',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-base-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-base-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-base-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-base-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-base-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-base-utilidad.jpg' },
+          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-zeros-a-base-variacion-volumen-de-comercio.jpg' },
+        }
+      },
+      'base-capricornio': {
+        label: 'Base → Capricornio',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-base-a-capricornio-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-base-a-capricornio-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-base-a-capricornio-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-base-a-capricornio-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-base-a-capricornio-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-base-a-capricornio-utilidad.jpg' },
+          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-base-a-capricornio-variacion-volumen-de-comercio.jpg' },
+        }
+      },
+      'zeros-capricornio': {
+        label: 'Zeros → Capricornio',
+        metrics: {
+          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-capricornio-apertura-comercial.jpg' },
+          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-capricornio-gdp-per-capita.jpg' },
+          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-capricornio-poblacion.jpg' },
+          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-capricornio-productividad.jpg' },
+          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-capricornio-salarios.jpg' },
+          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-capricornio-utilidad.jpg' },
+        }
+      }
+    };
+
+    const scenarioEl = document.getElementById('scenario');
+    const investmentEl = document.getElementById('investment');
+    const maintenanceEl = document.getElementById('maintenance');
+    const borderPenaltyEl = document.getElementById('borderPenalty');
+    const borderPenaltyLabel = document.getElementById('borderPenaltyLabel');
+    const metricsEl = document.getElementById('metrics');
+    const miniMetricsEl = document.getElementById('miniMetrics');
+    const selectedScenarioSummary = document.getElementById('selectedScenarioSummary');
+    const quickReading = document.getElementById('quickReading');
+    const comparisonTabs = document.getElementById('comparisonTabs');
+    const metricTabs = document.getElementById('metricTabs');
+    const mapImage = document.getElementById('mapImage');
+    const mapCaption = document.getElementById('mapCaption');
+
+    let currentScenario = 'completion';
+    let currentComparison = 'base-capricornio';
+    let currentMetric = 'gdp';
+
+    Object.entries(scenarios).forEach(([key, item]) => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = item.label;
+      scenarioEl.appendChild(opt);
+    });
+
+    scenarioEl.value = currentScenario;
+    investmentEl.value = scenarios[currentScenario].investment;
+    maintenanceEl.value = scenarios[currentScenario].maintenance;
+
+    function fmtNumber(v, digits = 1) {
+      return Number(v).toLocaleString('es-ES', { maximumFractionDigits: digits });
+    }
+
+    function computeState() {
+      const s = scenarios[currentScenario];
+      const investment = Number(investmentEl.value) || 0;
+      const maintenance = Number(maintenanceEl.value) || 0;
+      const borderPenalty = Number(borderPenaltyEl.value) || 0;
+      const factor = Math.max(0, Math.min(100, borderPenalty)) / 100;
+      const annualWelfare = s.annualWelfare * (1 - factor);
+      const simpleAnnualReturn = investment > 0 ? (annualWelfare / investment) * 100 : 0;
+      const netAnnualBenefit = annualWelfare - maintenance;
+      const paybackYears = netAnnualBenefit > 0 ? investment / netAnnualBenefit : null;
+      const adjustedAreas = s.areas.map(a => ({ ...a, adjusted: a.value * (1 - factor) }));
+      return { s, investment, maintenance, borderPenalty, annualWelfare, simpleAnnualReturn, netAnnualBenefit, paybackYears, adjustedAreas };
+    }
+
+    function renderMetricCards(state) {
+      const cards = [
+        { label: 'Bienestar anual ajustado', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
+        { label: 'Retorno anual simple', value: `${fmtNumber(state.simpleAnnualReturn, 2)}%` },
+        { label: 'Beneficio anual neto', value: `US$ ${fmtNumber(state.netAnnualBenefit)} M` },
+        { label: 'Payback estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
+      ];
+      metricsEl.innerHTML = cards.map(c => `
+        <div class="card metric-card">
+          <div class="k">${c.label}</div>
+          <div class="v">${c.value}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderMiniMetrics(state) {
+      const items = [
+        ['Trade', state.s.trade],
+        ['Población', state.s.population],
+        ['PIB', state.s.gdp],
+        ['Productividad', state.s.productivity],
+        ['Salarios', state.s.wages],
+      ];
+      miniMetricsEl.innerHTML = items.map(([n,v]) => `
+        <div class="mini-item">
+          <div class="n">${n}</div>
+          <div class="x">${fmtNumber(v, 2)}%</div>
+        </div>
+      `).join('');
+
+      selectedScenarioSummary.innerHTML = `
+        <strong>${state.s.title}</strong><br>
+        ROI de referencia del reporte: <strong>${fmtNumber(state.s.roi, 2)}%</strong>.<br>
+        Bienestar anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
+      `;
+
+      quickReading.innerHTML = `
+        Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, el beneficio anual ajustado queda en
+        <strong>US$ ${fmtNumber(state.annualWelfare)} M</strong>. El beneficio neto anual es
+        <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong>
+        y el territorio más beneficiado en este set es
+        <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>.
+      `;
+    }
+
+    const radarCtx = document.getElementById('radarChart');
+    const barCtx = document.getElementById('barChart');
+
+    const radarChart = new Chart(radarCtx, {
+      type: 'radar',
+      data: { labels: [], datasets: [] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { r: { beginAtZero: true, grid: { color: '#e2e8f0' }, angleLines: { color: '#e2e8f0' }, pointLabels: { color: '#334155' } } }
+      }
+    });
+
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: { labels: [], datasets: [] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#334155' }, grid: { display: false } },
+          y: { ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } }
+        }
+      }
+    });
+
+    function renderCharts(state) {
+      radarChart.data.labels = ['Trade', 'Población', 'PIB', 'Productividad', 'Salarios'];
+      radarChart.data.datasets = [
+        {
+          label: 'Impacto medio',
+          data: [state.s.trade, state.s.population, state.s.gdp, state.s.productivity, state.s.wages],
+          borderColor: '#0f172a',
+          backgroundColor: 'rgba(15,23,42,.22)',
+          pointBackgroundColor: '#0f172a'
+        },
+        {
+          label: 'Máximo observado',
+          data: [state.s.maxTrade, state.s.maxPopulation, state.s.maxGdp, state.s.maxProductivity, state.s.maxWages],
+          borderColor: '#94a3b8',
+          backgroundColor: 'rgba(148,163,184,.18)',
+          pointBackgroundColor: '#94a3b8'
+        }
+      ];
+      radarChart.update();
+
+      barChart.data.labels = state.adjustedAreas.map(a => a.name);
+      barChart.data.datasets = [{
+        data: state.adjustedAreas.map(a => a.adjusted),
+        backgroundColor: state.adjustedAreas.map(a => a.adjusted >= 0 ? '#0f766e' : '#b91c1c'),
+        borderRadius: 10,
+      }];
+      barChart.update();
+    }
+
+    function renderComparisonTabs() {
+      comparisonTabs.innerHTML = '';
+      Object.entries(mapLibrary).forEach(([key, item]) => {
+        const btn = document.createElement('button');
+        btn.className = `tab ${key === currentComparison ? 'active' : ''}`;
+        btn.textContent = item.label;
+        btn.onclick = () => {
+          currentComparison = key;
+          const metrics = Object.keys(mapLibrary[currentComparison].metrics);
+          if (!metrics.includes(currentMetric)) currentMetric = metrics[0];
+          renderComparisonTabs();
+          renderMetricTabs();
+          renderMap();
+        };
+        comparisonTabs.appendChild(btn);
+      });
+    }
+
+    function renderMetricTabs() {
+      metricTabs.innerHTML = '';
+      Object.entries(mapLibrary[currentComparison].metrics).forEach(([key, item]) => {
+        const btn = document.createElement('button');
+        btn.className = `metric-tab ${key === currentMetric ? 'active' : ''}`;
+        btn.textContent = item.label;
+        btn.onclick = () => {
+          currentMetric = key;
+          renderMetricTabs();
+          renderMap();
+        };
+        metricTabs.appendChild(btn);
+      });
+    }
+
+    function renderMap() {
+      const mapData = mapLibrary[currentComparison].metrics[currentMetric];
+      mapImage.src = mapData.file;
+      mapImage.alt = `${mapLibrary[currentComparison].label} - ${mapData.label}`;
+      mapCaption.innerHTML = `<strong>${mapLibrary[currentComparison].label}</strong> · ${mapData.label}`;
+    }
+
+    function updateAll() {
+      borderPenaltyLabel.textContent = `${borderPenaltyEl.value}%`;
+      const state = computeState();
+      renderMetricCards(state);
+      renderMiniMetrics(state);
+      renderCharts(state);
+    }
+
+    scenarioEl.addEventListener('change', () => {
+      currentScenario = scenarioEl.value;
+      const s = scenarios[currentScenario];
+      investmentEl.value = s.investment;
+      maintenanceEl.value = s.maintenance;
+      borderPenaltyEl.value = 0;
+      updateAll();
+    });
+    investmentEl.addEventListener('input', updateAll);
+    maintenanceEl.addEventListener('input', updateAll);
+    borderPenaltyEl.addEventListener('input', updateAll);
+
+    renderComparisonTabs();
+    renderMetricTabs();
+    renderMap();
+    updateAll();
+  </script>
+</body>
+</html>

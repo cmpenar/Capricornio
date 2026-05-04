@@ -512,12 +512,17 @@
         <div>
           <div class="author-line"><strong>Sector:</strong> Regional Integration – Infrastructure.</div>
           <div class="author-line"><strong>IADB Team:</strong> Arturo Galindo, Eduardo Cavallo, Julieta Abad, Leonel Borja, Esteban Diez, Eugenia Rivas, Alejandro Taddia y Diego Fasan.</div>
-          <div class="credits">Inter-American Development Bank, 2025.</div>
+          <div class="credits">Inter-American Development Bank, 2026.</div>
         </div>
       </div>
     </section>
 
-    <div class="footer-page">Visualización web basada en el documento de evaluación del Corredor Capricornio.</div>
+
+    <div class="footer-note" style="margin: 12px auto 0; max-width: 920px; text-align: center;">
+      Nota: SAC se refiere a South American Countries (países de América del Sur). En el modelo, los resultados agregados corresponden al promedio de las 1,697 economías territoriales consideradas en la región.
+    </div>
+
+    <div class="footer-page">Visualización web basada en el documento de evaluación del Corredor Capricornio. Datos de escenarios actualizados e incluye Escenario 3.</div>
   </div>
 
   <div class="modal-backdrop" id="methodologyModal" aria-hidden="true">
@@ -543,56 +548,97 @@
 
   <script>
     const scenarios = {
-      completion: {
-        label: 'Completar tramos faltantes',
-        title: 'Completar tramos faltantes del CC',
-        annualWelfare: 48.1,
-        investment: 697.5,
-        maintenance: 27.9,
-        roi: 2.9,
-        trade: 1.34,
-        population: 1.34,
-        gdp: 1.1,
-        productivity: 0.39,
-        wages: 0.29,
-        maxTrade: 5.85,
-        maxPopulation: 5.85,
-        maxGdp: 4.8,
-        maxProductivity: 1.68,
-        maxWages: 1.24,
+      partial: {
+        label: 'Escenario 3 · Upgrade parcial',
+        title: 'Escenario 3: upgrade parcial de vías secundarias',
+        description: 'Escenario conservador: mejora 310 km de vías secundarias a primarias y construye 80 km nuevos en tramos sin infraestructura. Impactos muy localizados.',
+        annualWelfare: 19.5,
+        investment: 244,
+        maintenance: 4.5,
+        roi: 2.58,
+        trade: 0.01,
+        population: 0.01,
+        gdp: 0.01,
+        productivity: 0.00,
+        utility: 0.00,
+        wages: 0.00,
+        corridorTrade: 0.24,
+        corridorPopulation: 0.20,
+        corridorGdp: 0.16,
+        maxTrade: 1.83,
+        maxPopulation: 1.52,
+        maxGdp: 1.25,
+        maxProductivity: 0.06,
+        maxWages: 0.04,
         areas: [
-          { name: 'Norte de Argentina', value: 21.6 },
-          { name: 'Norte de Chile', value: 12.2 },
-          { name: 'Paraguay central', value: 19.5 },
-          { name: 'Sudoeste de Brasil', value: 0.2 },
-          { name: 'Sur de Bolivia', value: -5.4 },
-          { name: 'Sur de Perú', value: 0.0 },
+          { name: 'Argentina', value: 214.82 },
+          { name: 'Paraguay', value: 130.12 },
+          { name: 'Chile', value: 98.85 },
+          { name: 'Brasil', value: 3.30 },
+          { name: 'Perú', value: 1.37 },
+          { name: 'Bolivia', value: -62.55 },
         ],
       },
-      corridor: {
-        label: 'Valor del corredor consolidado',
-        title: 'Valor del corredor consolidado',
-        annualWelfare: 7028.9,
-        investment: 7950,
-        maintenance: 318,
-        roi: 84.4,
-        trade: 11.2,
-        population: 8.44,
-        gdp: 7.5,
-        productivity: 2.57,
-        wages: 1.97,
-        maxTrade: 47.9,
-        maxPopulation: 39.43,
-        maxGdp: 32.36,
-        maxProductivity: 11.44,
-        maxWages: 8.49,
+      completion: {
+        label: 'Escenario 1 · Completar faltantes',
+        title: 'Escenario 1: completar tramos faltantes del CC',
+        description: 'Construcción de nueva vía primaria en 390 km para conectar localizaciones previamente aisladas en Argentina y Paraguay. Beneficios moderados y concentrados.',
+        annualWelfare: 59.9,
+        investment: 585,
+        maintenance: 11.0,
+        roi: 6.55,
+        trade: 0.03,
+        population: 0.02,
+        gdp: 0.02,
+        productivity: 0.01,
+        utility: 0.01,
+        wages: 0.00,
+        corridorTrade: 0.56,
+        corridorPopulation: 0.46,
+        corridorGdp: 0.38,
+        maxTrade: 8.19,
+        maxPopulation: 6.69,
+        maxGdp: 5.46,
+        maxProductivity: 0.14,
+        maxWages: 0.10,
         areas: [
-          { name: 'Norte de Argentina', value: 1433.3 },
-          { name: 'Norte de Chile', value: 554.3 },
-          { name: 'Paraguay', value: 57.3 },
-          { name: 'Sudoeste de Brasil', value: 4945.9 },
-          { name: 'Sur de Bolivia', value: 31.4 },
-          { name: 'Sur de Perú', value: 6.7 },
+          { name: 'Argentina', value: 535.34 },
+          { name: 'Chile', value: 414.68 },
+          { name: 'Paraguay', value: 363.00 },
+          { name: 'Brasil', value: 5.33 },
+          { name: 'Perú', value: 1.30 },
+          { name: 'Bolivia', value: -114.79 },
+        ],
+      },
+      bioceanic: {
+        label: 'Escenario 2 · Corredor bioceánico',
+        title: 'Escenario 2: construcción del corredor bioceánico',
+        description: 'Intervención de gran escala: corredor continuo de alta capacidad desde puertos chilenos del Pacífico hasta Santos, Brasil. Genera los impactos sistémicos más altos.',
+        annualWelfare: 9101,
+        investment: 22750,
+        maintenance: 4000,
+        roi: 31.04,
+        trade: 0.39,
+        population: 0.31,
+        gdp: 0.28,
+        productivity: 0.09,
+        utility: 0.18,
+        wages: 0.08,
+        corridorTrade: 9.17,
+        corridorPopulation: 7.50,
+        corridorGdp: 6.12,
+        maxTrade: 16.96,
+        maxPopulation: 13.82,
+        maxGdp: 11.22,
+        maxProductivity: 2.20,
+        maxWages: 1.55,
+        areas: [
+          { name: 'Brasil', value: 146153.72 },
+          { name: 'Chile', value: 18572.14 },
+          { name: 'Argentina', value: 12630.52 },
+          { name: 'Paraguay', value: 2214.13 },
+          { name: 'Perú', value: 851.38 },
+          { name: 'Bolivia', value: 498.45 },
         ],
       }
     };
@@ -648,13 +694,20 @@
     const metricTabs = document.getElementById('metricTabs');
     const mapImage = document.getElementById('mapImage');
     const mapCaption = document.getElementById('mapCaption');
+    const openMethodology = document.getElementById('openMethodology');
     const openMethodologySecondary = document.getElementById('openMethodologySecondary');
+    const closeMethodology = document.getElementById('closeMethodology');
+    const methodologyModal = document.getElementById('methodologyModal');
 
     let currentScenario = 'completion';
     let currentComparison = 'base-capricornio';
     let currentMetric = 'gdp';
 
-    Object.entries(scenarios).forEach(([key, item]) => {
+    // Orden explícito para que el desplegable muestre Escenario 1, 2 y 3.
+    const scenarioOrder = ['completion', 'bioceanic', 'partial'];
+
+    scenarioOrder.forEach((key) => {
+      const item = scenarios[key];
       const opt = document.createElement('option');
       opt.value = key;
       opt.textContent = item.label;
@@ -685,10 +738,10 @@
 
     function renderMetricCards(state) {
       const cards = [
-        { label: 'Bienestar anual ajustado', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
-        { label: 'Retorno anual simple', value: `${fmtNumber(state.simpleAnnualReturn, 2)}%` },
+        { label: 'Ganancia anual ajustada', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
+        { label: 'TIR / IRR del reporte', value: `${fmtNumber(state.s.roi, 2)}%` },
         { label: 'Beneficio anual neto', value: `US$ ${fmtNumber(state.netAnnualBenefit)} M` },
-        { label: 'Payback estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
+        { label: 'Payback simple estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
       ];
       metricsEl.innerHTML = cards.map(c => `
         <div class="card metric-card">
@@ -700,11 +753,11 @@
 
     function renderMiniMetrics(state) {
       const items = [
-        ['Trade', state.s.trade],
-        ['Población', state.s.population],
-        ['PIB', state.s.gdp],
-        ['Productividad', state.s.productivity],
-        ['Salarios', state.s.wages],
+        ['Trade SAC', state.s.trade],
+        ['Población SAC', state.s.population],
+        ['PIB pc SAC', state.s.gdp],
+        ['Trade corredor', state.s.corridorTrade],
+        ['PIB pc corredor', state.s.corridorGdp],
       ];
       miniMetricsEl.innerHTML = items.map(([n,v]) => `
         <div class="mini-item">
@@ -715,15 +768,15 @@
 
       selectedScenarioSummary.innerHTML = `
         <strong>${state.s.title}</strong><br>
-        ROI de referencia del reporte: <strong>${fmtNumber(state.s.roi, 2)}%</strong>.<br>
-        Bienestar anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
+        ${state.s.description}<br>
+        Inversión base: <strong>US$ ${fmtNumber(state.s.investment)} M</strong> · TIR: <strong>${fmtNumber(state.s.roi, 2)}%</strong> · Ganancia anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
       `;
 
       quickReading.innerHTML = `
-        Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, el beneficio anual ajustado queda en
+        Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, la ganancia anual ajustada queda en
         <strong>US$ ${fmtNumber(state.annualWelfare)} M</strong>. El beneficio neto anual es
         <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong>
-        y el territorio más beneficiado en este set es
+        y el mayor beneficio territorial en este set corresponde a
         <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>.
       `;
     }
@@ -755,17 +808,17 @@
     });
 
     function renderCharts(state) {
-      radarChart.data.labels = ['Trade', 'Población', 'PIB', 'Productividad', 'Salarios'];
+      radarChart.data.labels = ['Trade', 'Población', 'PIB pc', 'Productividad', 'Salarios'];
       radarChart.data.datasets = [
         {
-          label: 'Impacto medio',
+          label: 'Impacto promedio SAC',
           data: [state.s.trade, state.s.population, state.s.gdp, state.s.productivity, state.s.wages],
           borderColor: '#0f172a',
           backgroundColor: 'rgba(15,23,42,.22)',
           pointBackgroundColor: '#0f172a'
         },
         {
-          label: 'Máximo observado',
+          label: 'Máximo / corredor',
           data: [state.s.maxTrade, state.s.maxPopulation, state.s.maxGdp, state.s.maxProductivity, state.s.maxWages],
           borderColor: '#94a3b8',
           backgroundColor: 'rgba(148,163,184,.18)',
@@ -793,33 +846,7 @@
           currentComparison = key;
           const metrics = Object.keys(mapLibrary[currentComparison].metrics);
           if (!metrics.includes(currentMetric)) currentMetric = metrics[0];
-      
-    const openMethodology = document.getElementById('openMethodology');
-    const closeMethodology = document.getElementById('closeMethodology');
-    const methodologyModal = document.getElementById('methodologyModal');
-
-    openMethodology.addEventListener('click', () => {
-      methodologyModal.classList.add('open');
-      methodologyModal.setAttribute('aria-hidden', 'false');
-    });
-    closeMethodology.addEventListener('click', () => {
-      methodologyModal.classList.remove('open');
-      methodologyModal.setAttribute('aria-hidden', 'true');
-    });
-    methodologyModal.addEventListener('click', (e) => {
-      if (e.target === methodologyModal) {
-        methodologyModal.classList.remove('open');
-        methodologyModal.setAttribute('aria-hidden', 'true');
-      }
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        methodologyModal.classList.remove('open');
-        methodologyModal.setAttribute('aria-hidden', 'true');
-      }
-    });
-
-    renderComparisonTabs();
+          renderComparisonTabs();
           renderMetricTabs();
           renderMap();
         };
@@ -869,30 +896,22 @@
     maintenanceEl.addEventListener('input', updateAll);
     borderPenaltyEl.addEventListener('input', updateAll);
 
-
-    const openMethodology = document.getElementById('openMethodology');
-    const closeMethodology = document.getElementById('closeMethodology');
-    const methodologyModal = document.getElementById('methodologyModal');
-
-    openMethodology.addEventListener('click', () => {
+    function openModal() {
       methodologyModal.classList.add('open');
       methodologyModal.setAttribute('aria-hidden', 'false');
-    });
-    closeMethodology.addEventListener('click', () => {
+    }
+    function closeModal() {
       methodologyModal.classList.remove('open');
       methodologyModal.setAttribute('aria-hidden', 'true');
-    });
+    }
+    openMethodology.addEventListener('click', openModal);
+    openMethodologySecondary.addEventListener('click', openModal);
+    closeMethodology.addEventListener('click', closeModal);
     methodologyModal.addEventListener('click', (e) => {
-      if (e.target === methodologyModal) {
-        methodologyModal.classList.remove('open');
-        methodologyModal.setAttribute('aria-hidden', 'true');
-      }
+      if (e.target === methodologyModal) closeModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        methodologyModal.classList.remove('open');
-        methodologyModal.setAttribute('aria-hidden', 'true');
-      }
+      if (e.key === 'Escape') closeModal();
     });
 
     renderComparisonTabs();

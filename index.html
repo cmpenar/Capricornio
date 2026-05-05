@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -251,6 +250,37 @@
       .model-header { align-items: stretch; }
     }
 
+
+    .scenario-hero {
+      display:grid; grid-template-columns: 1.05fr .95fr; gap:16px; margin:16px 0 18px;
+    }
+    .scenario-panel {
+      border:1px solid var(--line); border-radius:20px; padding:18px; background:linear-gradient(180deg,#ffffff,#f8fafc);
+    }
+    .scenario-tag {
+      display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:#0f172a; color:#fff;
+      font-size:.82rem; font-weight:800; margin-bottom:10px;
+    }
+    .scenario-panel h4 { margin:0 0 8px; font-size:1.1rem; }
+    .scenario-panel p { margin:0; color:#475569; line-height:1.55; }
+    .scenario-message {
+      border-left:4px solid #0f172a; background:#eef4fb; border-radius:0 16px 16px 0; padding:14px 16px; color:#334155; line-height:1.55;
+    }
+    .scale-grid {
+      display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:14px 0 18px;
+    }
+    .scale-card {
+      border:1px solid var(--line); border-radius:18px; background:#fff; padding:14px;
+    }
+    .scale-card .scale-title { color:#64748b; font-size:.82rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; gap:8px; }
+    .kpi-emoji { display:inline-flex; width:22px; height:22px; align-items:center; justify-content:center; filter: grayscale(1) saturate(0); opacity:.72; font-size:1rem; line-height:1; }
+    .scale-card .scale-main { margin-top:8px; font-size:1.35rem; font-weight:900; }
+    .scale-card .scale-copy { margin-top:6px; color:#475569; font-size:.9rem; line-height:1.4; }
+    .scenario-note { color:#64748b; font-size:.9rem; line-height:1.5; margin:10px 0 0; }
+    @media (max-width: 1100px) {
+      .scenario-hero, .scale-grid { grid-template-columns:1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -481,10 +511,15 @@
         <section class="card" style="margin-bottom:24px;">
           <h3 class="section-title">Lectura rápida</h3>
           <p class="sub">
-            Nota: SAC se refiere a South American Countries (países de América del Sur). En el modelo, los resultados agregados corresponden al promedio de las 1,697 economías territoriales consideradas en la región.
+            Los beneficios del corredor crecen de forma no lineal: intervenciones pequeñas generan efectos locales, mientras que inversiones integrales producen impactos sistémicos en la región.
           </p>
+          <div class="scenario-hero" id="scenarioStory"></div>
+          <div class="scale-grid" id="scaleGrid"></div>
           <div class="mini-grid" id="miniMetrics"></div>
           <div class="status" id="quickReading"></div>
+          <p class="scenario-note">
+            Nota: SAC significa <em>South American Countries</em> —países de América del Sur—. En este dashboard, los impactos agregados SAC muestran promedios regionales sobre 1,697 economías territoriales; por eso pueden ser menores que los efectos observados dentro del corredor o en las zonas más beneficiadas.
+          </p>
         </section>
 
         <section class="card" id="mapas">
@@ -547,7 +582,9 @@
   <script>
     const scenarios = {
       partial: {
-        label: 'Escenario 3 · Upgrade parcial',
+        label: '3. Intervención mínima',
+        tag: 'Bajo impacto',
+        headline: 'Prueba conservadora con retornos reducidos',
         title: 'Escenario 3: upgrade parcial de vías secundarias',
         description: 'Escenario conservador: mejora 310 km de vías secundarias a primarias y construye 80 km nuevos en tramos sin infraestructura. Impactos muy localizados.',
         annualWelfare: 19.5,
@@ -578,7 +615,9 @@
         ],
       },
       completion: {
-        label: 'Escenario 1 · Completar faltantes',
+        label: '1. Cerrar brechas del corredor',
+        tag: 'Impacto local',
+        headline: 'Conecta tramos faltantes y concentra beneficios cerca del corredor',
         title: 'Escenario 1: completar tramos faltantes del CC',
         description: 'Construcción de nueva vía primaria en 390 km para conectar localizaciones previamente aisladas en Argentina y Paraguay. Beneficios moderados y concentrados.',
         annualWelfare: 59.9,
@@ -609,7 +648,9 @@
         ],
       },
       bioceanic: {
-        label: 'Escenario 2 · Corredor bioceánico',
+        label: '2. Integración regional total',
+        tag: 'Impacto sistémico',
+        headline: 'Transforma el corredor en una red continua de alta capacidad',
         title: 'Escenario 2: construcción del corredor bioceánico',
         description: 'Intervención de gran escala: corredor continuo de alta capacidad desde puertos chilenos del Pacífico hasta Santos, Brasil. Genera los impactos sistémicos más altos.',
         annualWelfare: 9101,
@@ -688,6 +729,8 @@
     const miniMetricsEl = document.getElementById('miniMetrics');
     const selectedScenarioSummary = document.getElementById('selectedScenarioSummary');
     const quickReading = document.getElementById('quickReading');
+    const scenarioStory = document.getElementById('scenarioStory');
+    const scaleGrid = document.getElementById('scaleGrid');
     const comparisonTabs = document.getElementById('comparisonTabs');
     const metricTabs = document.getElementById('metricTabs');
     const mapImage = document.getElementById('mapImage');
@@ -734,6 +777,51 @@
       return { s, investment, maintenance, borderPenalty, annualWelfare, simpleAnnualReturn, netAnnualBenefit, paybackYears, adjustedAreas };
     }
 
+    function getScenarioInsight(state) {
+      const s = state.s;
+      if (s.roi >= 25) {
+        return 'Escenario de alto impacto regional: la escala de inversión reduce costos de transporte de forma suficiente para generar spillovers amplios, con ganancias importantes dentro y fuera del corredor.';
+      }
+      if (s.roi >= 5) {
+        return 'Escenario de impacto moderado: mejora la conectividad de zonas aisladas y genera beneficios positivos, pero principalmente concentrados en territorios directamente conectados al corredor.';
+      }
+      return 'Escenario de bajo impacto: sirve como alternativa conservadora, con costos menores, pero también con efectos económicos limitados y altamente localizados.';
+    }
+
+    function renderScenarioStory(state) {
+      const s = state.s;
+      scenarioStory.innerHTML = `
+        <div class="scenario-panel">
+          <div class="scenario-tag">${s.tag}</div>
+          <h4>${s.headline}</h4>
+          <p>${s.description}</p>
+        </div>
+        <div class="scenario-message">
+          <strong>Lectura ejecutiva:</strong><br>
+          ${getScenarioInsight(state)}
+        </div>
+      `;
+
+      const maxImpact = Math.max(s.maxTrade, s.maxPopulation, s.maxGdp);
+      scaleGrid.innerHTML = `
+        <div class="scale-card">
+          <div class="scale-title"><span class="kpi-emoji">🌎</span><span>Promedio regional SAC</span></div>
+          <div class="scale-main">${fmtNumber(s.trade, 2)}%</div>
+          <div class="scale-copy">Variación promedio del comercio en las 1,697 economías territoriales.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-title"><span class="kpi-emoji">📍</span><span>Dentro del corredor</span></div>
+          <div class="scale-main">${fmtNumber(s.corridorTrade, 2)}%</div>
+          <div class="scale-copy">Impacto comercial promedio en las ubicaciones conectadas por el corredor.</div>
+        </div>
+        <div class="scale-card">
+          <div class="scale-title"><span class="kpi-emoji">🔥</span><span>Máximo observado</span></div>
+          <div class="scale-main">${fmtNumber(maxImpact, 2)}%</div>
+          <div class="scale-copy">Mayor impacto local entre comercio, población y PIB per cápita.</div>
+        </div>
+      `;
+    }
+
     function renderMetricCards(state) {
       const cards = [
         { label: 'Ganancia anual ajustada', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
@@ -766,6 +854,7 @@
 
       selectedScenarioSummary.innerHTML = `
         <strong>${state.s.title}</strong><br>
+        <span style="display:inline-block;margin:8px 0;padding:6px 10px;border-radius:999px;background:#e2e8f0;color:#0f172a;font-weight:800;font-size:.82rem;">${state.s.tag}</span><br>
         ${state.s.description}<br>
         Inversión base: <strong>US$ ${fmtNumber(state.s.investment)} M</strong> · TIR: <strong>${fmtNumber(state.s.roi, 2)}%</strong> · Ganancia anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
       `;
@@ -773,9 +862,8 @@
       quickReading.innerHTML = `
         Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, la ganancia anual ajustada queda en
         <strong>US$ ${fmtNumber(state.annualWelfare)} M</strong>. El beneficio neto anual es
-        <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong>
-        y el mayor beneficio territorial en este set corresponde a
-        <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>.
+        <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong> y el mayor beneficio territorial estimado corresponde a
+        <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>. La lectura clave es comparar siempre tres escalas: promedio SAC, efecto dentro del corredor y máximo local.
       `;
     }
 
@@ -878,6 +966,7 @@
       borderPenaltyLabel.textContent = `${borderPenaltyEl.value}%`;
       const state = computeState();
       renderMetricCards(state);
+      renderScenarioStory(state);
       renderMiniMetrics(state);
       renderCharts(state);
     }

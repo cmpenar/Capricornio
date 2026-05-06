@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Capricornio Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
   <style>
     :root {
       --bg: #f4f7fb;
@@ -281,6 +283,22 @@
       .scenario-hero, .scale-grid { grid-template-columns:1fr; }
     }
 
+    .arcgis-toolbar {
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin: 10px 0 14px;
+    }
+    .arcgis-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .arcgis-map {
+      width:100%; height:640px; min-height:520px; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:#eef2f7;
+    }
+    .layer-status {
+      color:var(--muted); font-size:.9rem; line-height:1.45; margin-top:10px;
+    }
+    .map-select-row { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+    @media (max-width: 720px) {
+      .arcgis-map { height:520px; }
+      .map-select-row { grid-template-columns:1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -289,8 +307,8 @@
       <div class="hero-top">
         <div>
           <div style="text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; opacity: .82;">Capricornio App</div>
-          <h1>Dashboard + calculadora del Corredor Capricornio</h1>
-          <p>Micrositio de resultados del modelo espacial para evaluar conectividad, mercado, migración y crecimiento territorial.</p>
+          <h1>Efectos sobre la población y el crecimiento derivados de la mejora del Corredor de Capricornio</h1>
+          <p>Dashboard + calculadora del Corredor Capricornio</p>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button class="ghost-btn" id="openMethodology">Metodología del modelo</button>
@@ -524,15 +542,19 @@
 
         <section class="card" id="mapas">
           <h3 class="section-title">Mapas del corredor</h3>
-          <p class="sub">Selecciona una comparación y un indicador. Se muestran mapas como los que compartiste.</p>
-
-          <div class="tabs" id="comparisonTabs"></div>
-          <div class="metric-tabs" id="metricTabs"></div>
-
-          <div class="map-view">
-            <img id="mapImage" src="" alt="Mapa del corredor" />
+          
+          <div class="map-select-row" style="margin-top:24px;">
+            <div>
+              <label for="arcgisScenarioSelect">Escenario activo</label>
+              <select id="arcgisScenarioSelect"></select>
+            </div>
+            <div>
+              <label for="arcgisMetricSelect">Indicador disponible para este escenario</label>
+              <select id="arcgisMetricSelect"></select>
+            </div>
           </div>
-          <div class="legend-note" id="mapCaption"></div>
+<div id="arcgisMap" class="arcgis-map" aria-label="Mapa interactivo de ArcGIS Online" style="margin-top:24px;"></div>
+          
         </section>
       </main>
     </section>
@@ -682,43 +704,53 @@
       }
     };
 
-    const mapLibrary = {
-      'zeros-base': {
-        label: 'Zeros → Base',
-        metrics: {
-          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-base-apertura-comercial.jpg' },
-          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-base-gdp-per-capita.jpg' },
-          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-base-poblacion.jpg' },
-          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-base-productividad.jpg' },
-          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-base-salarios.jpg' },
-          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-base-utilidad.jpg' },
-          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-zeros-a-base-variacion-volumen-de-comercio.jpg' },
-        }
-      },
-      'base-capricornio': {
-        label: 'Base → Capricornio',
-        metrics: {
-          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-base-a-capricornio-apertura-comercial.jpg' },
-          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-base-a-capricornio-gdp-per-capita.jpg' },
-          poblacion: { label: 'Población', file: 'assets/mapas-de-base-a-capricornio-poblacion.jpg' },
-          productividad: { label: 'Productividad', file: 'assets/mapas-de-base-a-capricornio-productividad.jpg' },
-          salarios: { label: 'Salarios', file: 'assets/mapas-de-base-a-capricornio-salarios.jpg' },
-          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-base-a-capricornio-utilidad.jpg' },
-          comercio: { label: 'Variación volumen de comercio', file: 'assets/mapas-de-base-a-capricornio-variacion-volumen-de-comercio.jpg' },
-        }
-      },
-      'zeros-capricornio': {
-        label: 'Zeros → Capricornio',
-        metrics: {
-          apertura: { label: 'Apertura comercial', file: 'assets/mapas-de-zeros-a-capricornio-apertura-comercial.jpg' },
-          gdp: { label: 'GDP per Capita', file: 'assets/mapas-de-zeros-a-capricornio-gdp-per-capita.jpg' },
-          poblacion: { label: 'Población', file: 'assets/mapas-de-zeros-a-capricornio-poblacion.jpg' },
-          productividad: { label: 'Productividad', file: 'assets/mapas-de-zeros-a-capricornio-productividad.jpg' },
-          salarios: { label: 'Salarios', file: 'assets/mapas-de-zeros-a-capricornio-salarios.jpg' },
-          utilidad: { label: 'Utilidad', file: 'assets/mapas-de-zeros-a-capricornio-utilidad.jpg' },
-        }
-      }
+    const ARCGIS_ITEM_ID = '86d66a694af742b4b7a7759b7c09c5e0';
+
+    const metricDefinitions = {
+      apertura: ['apertura comercial', 'trade openness', 'openness', 'apertura'],
+      gdp: ['gdp per capita', 'pib per capita', 'pib pc', 'gdp', 'pib'],
+      poblacion: ['población', 'poblacion', 'population'],
+      productividad: ['productividad', 'productivity'],
+      salarios: ['salarios', 'wages', 'salario'],
+      utilidad: ['utilidad', 'utility', 'bienestar', 'welfare'],
+      comercio: ['variación volumen de comercio', 'variacion volumen de comercio', 'volumen de comercio', 'trade volume', 'comercio']
     };
+
+    const metricLabels = {
+      apertura: 'Apertura comercial',
+      gdp: 'GDP per Capita',
+      poblacion: 'Población',
+      productividad: 'Productividad',
+      salarios: 'Salarios',
+      utilidad: 'Utilidad',
+      comercio: 'Variación volumen de comercio'
+    };
+
+    const scenarioDefinitions = {
+      // Escenarios del reporte. Estos alias permiten que el filtro funcione aunque
+      // las capas se llamen "Escenario 1 - GDP", "S1_GDP", "completion_gdp", etc.
+      'completion': ['escenario 1', 'scenario 1', 'esc 1', 'e1', 's1', 'cerrar brechas', 'completar tramos', 'completion', 'faltantes'],
+      'bioceanic': ['escenario 2', 'scenario 2', 'esc 2', 'e2', 's2', 'bioceánico', 'bioceanico', 'integración regional', 'integracion regional', 'corredor bioceanico'],
+      'partial': ['escenario 3', 'scenario 3', 'esc 3', 'e3', 's3', 'intervención mínima', 'intervencion minima', 'partial', 'minima'],
+
+      // Comparaciones antiguas: quedan como respaldo si el item de ArcGIS todavía usa esos nombres.
+      'zeros-base': ['zeros → base', 'zeros a base', 'zeros-base', 'zero to base', 'zeros_base'],
+      'base-capricornio': ['base → capricornio', 'base a capricornio', 'base-capricornio', 'base_capricornio'],
+      'zeros-capricornio': ['zeros → capricornio', 'zeros a capricornio', 'zeros-capricornio', 'zeros_capricornio']
+    };
+
+    const scenarioLabels = {
+      'zeros-base': 'Zeros → Base',
+      'base-capricornio': 'Base → Capricornio',
+      'zeros-capricornio': 'Zeros → Capricornio',
+      completion: '1. Cerrar brechas del corredor',
+      bioceanic: '2. Integración regional total',
+      partial: '3. Intervención mínima'
+    };
+
+    let arcgisView = null;
+    let arcgisOperationalLayers = [];
+    let arcgisControlModel = {};
 
     const scenarioEl = document.getElementById('scenario');
     const investmentEl = document.getElementById('investment');
@@ -731,10 +763,8 @@
     const quickReading = document.getElementById('quickReading');
     const scenarioStory = document.getElementById('scenarioStory');
     const scaleGrid = document.getElementById('scaleGrid');
-    const comparisonTabs = document.getElementById('comparisonTabs');
-    const metricTabs = document.getElementById('metricTabs');
-    const mapImage = document.getElementById('mapImage');
-    const mapCaption = document.getElementById('mapCaption');
+            const arcgisScenarioSelect = document.getElementById('arcgisScenarioSelect');
+    const arcgisMetricSelect = document.getElementById('arcgisMetricSelect');
     const openMethodology = document.getElementById('openMethodology');
     const openMethodologySecondary = document.getElementById('openMethodologySecondary');
     const closeMethodology = document.getElementById('closeMethodology');
@@ -922,44 +952,240 @@
       barChart.update();
     }
 
-    function renderComparisonTabs() {
-      comparisonTabs.innerHTML = '';
-      Object.entries(mapLibrary).forEach(([key, item]) => {
-        const btn = document.createElement('button');
-        btn.className = `tab ${key === currentComparison ? 'active' : ''}`;
-        btn.textContent = item.label;
-        btn.onclick = () => {
-          currentComparison = key;
-          const metrics = Object.keys(mapLibrary[currentComparison].metrics);
-          if (!metrics.includes(currentMetric)) currentMetric = metrics[0];
-          renderComparisonTabs();
-          renderMetricTabs();
-          renderMap();
-        };
-        comparisonTabs.appendChild(btn);
+    function normalizeText(value) {
+      return String(value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[._-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function detectScenario(title) {
+      const n = normalizeText(title);
+      for (const [key, aliases] of Object.entries(scenarioDefinitions)) {
+        if (aliases.some(alias => n.includes(normalizeText(alias)))) return key;
+      }
+      return null;
+    }
+
+    function uniqueCustomMetricKey(title) {
+      return `custom:${normalizeText(title).slice(0, 60) || 'indicador'}`;
+    }
+
+    function detectMetric(title) {
+      const n = normalizeText(title);
+      for (const [key, aliases] of Object.entries(metricDefinitions)) {
+        if (aliases.some(alias => n.includes(normalizeText(alias)))) return key;
+      }
+      return uniqueCustomMetricKey(title);
+    }
+
+    function uniqueLayerTitle(layer) {
+      return layer.title || layer.id || 'Capa sin título';
+    }
+
+    function buildArcgisControlModel() {
+      arcgisControlModel = {};
+
+      arcgisOperationalLayers.forEach(layer => {
+        const title = uniqueLayerTitle(layer);
+        const searchTitle = layer._dashboardSearchTitle || title;
+        const scenarioKey = layer._dashboardScenarioKey || detectScenario(searchTitle);
+        if (!scenarioOrder.includes(scenarioKey)) return;
+
+        const metricKey = detectMetric(searchTitle);
+        if (!arcgisControlModel[scenarioKey]) arcgisControlModel[scenarioKey] = {};
+        if (!arcgisControlModel[scenarioKey][metricKey]) arcgisControlModel[scenarioKey][metricKey] = [];
+        arcgisControlModel[scenarioKey][metricKey].push(layer);
       });
+
+      if (arcgisControlModel[currentScenario]) {
+        currentComparison = currentScenario;
+      } else {
+        currentComparison = scenarioOrder.find(key => arcgisControlModel[key]) || currentScenario;
+      }
+
+      const metricKeys = Object.keys(arcgisControlModel[currentComparison] || {});
+      currentMetric = metricKeys.includes(currentMetric) ? currentMetric : (metricKeys[0] || null);
+    }
+
+    function getScenarioLabel(key) {
+      return scenarioLabels[key] || key || 'Escenario no detectado';
+    }
+
+    function getMetricLabel(key) {
+      if (!key) return 'Sin indicador disponible';
+      if (metricLabels[key]) return metricLabels[key];
+      if (key.startsWith('custom:')) {
+        const layers = (arcgisControlModel[currentComparison] || {})[key] || [];
+        return layers[0] ? uniqueLayerTitle(layers[0]) : 'Indicador';
+      }
+      return key;
+    }
+
+    function renderComparisonTabs() {
+      const available = scenarioOrder.filter(key => arcgisControlModel[key]);
+      arcgisScenarioSelect.innerHTML = '';
+
+      scenarioOrder.forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = getScenarioLabel(key) + (arcgisControlModel[key] ? '' : ' — sin capas detectadas');
+        opt.disabled = !arcgisControlModel[key];
+        arcgisScenarioSelect.appendChild(opt);
+      });
+      arcgisScenarioSelect.value = currentComparison;
+
+      if (!available.length) {
+        layerStatus.innerHTML = 'No se detectaron grupos de Escenario 1, Escenario 2 o Escenario 3 en el WebMap. Revisa que los grupos o capas incluyan esos nombres.';
+      }
     }
 
     function renderMetricTabs() {
-      metricTabs.innerHTML = '';
-      Object.entries(mapLibrary[currentComparison].metrics).forEach(([key, item]) => {
-        const btn = document.createElement('button');
-        btn.className = `metric-tab ${key === currentMetric ? 'active' : ''}`;
-        btn.textContent = item.label;
-        btn.onclick = () => {
-          currentMetric = key;
-          renderMetricTabs();
-          renderMap();
-        };
-        metricTabs.appendChild(btn);
+      arcgisMetricSelect.innerHTML = '';
+
+      const metrics = Object.keys(arcgisControlModel[currentComparison] || {});
+
+      if (!metrics.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Sin indicadores detectados';
+        arcgisMetricSelect.appendChild(opt);
+        return;
+      }
+
+      metrics.forEach((key) => {
+        const label = getMetricLabel(key);
+
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = label;
+
+        arcgisMetricSelect.appendChild(opt);
       });
+
+      arcgisMetricSelect.value = currentMetric || '';
+    }
+
+    function syncArcgisWithDashboardScenario() {
+      if (arcgisControlModel[currentScenario]) {
+        setArcgisScenario(currentScenario, true);
+      } else {
+        currentComparison = currentScenario;
+        currentMetric = null;
+        renderComparisonTabs();
+        renderMetricTabs();
+        renderMap();
+      }
+    }
+
+    function setArcgisScenario(key, resetMetric = true) {
+      currentComparison = key;
+      const metrics = Object.keys(arcgisControlModel[currentComparison] || {});
+      if (resetMetric || !metrics.includes(currentMetric)) currentMetric = metrics[0] || null;
+      renderComparisonTabs();
+      renderMetricTabs();
+      renderMap();
+    }
+
+    function setArcgisMetric(key) {
+      currentMetric = key;
+      renderMetricTabs();
+      renderMap();
+    }
+
+    function setLayerAndParentsVisible(layer, visible) {
+      layer.visible = visible;
+      let parent = layer.parent;
+      while (parent && parent.type === 'group') {
+        parent.visible = true;
+        parent = parent.parent;
+      }
     }
 
     function renderMap() {
-      const mapData = mapLibrary[currentComparison].metrics[currentMetric];
-      mapImage.src = mapData.file;
-      mapImage.alt = `${mapLibrary[currentComparison].label} - ${mapData.label}`;
-      mapCaption.innerHTML = `<strong>${mapLibrary[currentComparison].label}</strong> · ${mapData.label}`;
+      if (!arcgisOperationalLayers.length) return;
+      const selectedLayers = currentMetric ? ((arcgisControlModel[currentComparison] || {})[currentMetric] || []) : [];
+
+      arcgisOperationalLayers.forEach(layer => setLayerAndParentsVisible(layer, false));
+      selectedLayers.forEach(layer => setLayerAndParentsVisible(layer, true));
+
+      const scenarioLabel = getScenarioLabel(currentComparison);
+      const metricLabel = getMetricLabel(currentMetric);
+
+      if (selectedLayers.length) {
+        
+      } else {
+        
+      }
+    }
+
+    function collectArcgisLayers(layer, inheritedScenarioKey = null, inheritedTitle = '') {
+      const layerTitle = uniqueLayerTitle(layer);
+      const scenarioFromThisLayer = detectScenario(layerTitle) || inheritedScenarioKey;
+      const combinedTitle = `${inheritedTitle} ${layerTitle}`.trim();
+
+      if (layer.layers && layer.layers.length) {
+        return layer.layers.toArray().flatMap(child => collectArcgisLayers(child, scenarioFromThisLayer, combinedTitle));
+      }
+
+      layer._dashboardScenarioKey = scenarioFromThisLayer;
+      layer._dashboardSearchTitle = combinedTitle;
+      return [layer];
+    }
+
+    function initArcGIS() {
+      if (!window.require) {
+        
+        return;
+      }
+
+      require([
+        'esri/WebMap',
+        'esri/views/MapView',
+        'esri/widgets/Legend',
+        'esri/widgets/Expand',
+        'esri/widgets/Home',
+        'esri/widgets/LayerList'
+      ], function(WebMap, MapView, Legend, Expand, Home, LayerList) {
+        const webmap = new WebMap({
+          portalItem: { id: ARCGIS_ITEM_ID }
+        });
+
+        arcgisView = new MapView({
+          container: 'arcgisMap',
+          map: webmap,
+          center: [-58.5, -22.5],
+          zoom: 5.4,
+          popup: { dockEnabled: true, dockOptions: { position: 'bottom-right', breakpoint: false } }
+        });
+
+        arcgisView.ui.add(new Home({ view: arcgisView }), 'top-left');
+
+        const legend = new Legend({ view: arcgisView });
+        const legendExpand = new Expand({ view: arcgisView, content: legend, expanded: false, expandTooltip: 'Leyenda' });
+        arcgisView.ui.add(legendExpand, 'bottom-left');
+
+        const layerList = new LayerList({ view: arcgisView });
+        const layerExpand = new Expand({ view: arcgisView, content: layerList, expanded: false, expandTooltip: 'Capas' });
+        arcgisView.ui.add(layerExpand, 'top-right');
+
+        arcgisView.when(() => webmap.when(() => {
+          arcgisOperationalLayers = webmap.layers.toArray().flatMap(layer => collectArcgisLayers(layer));
+
+          arcgisOperationalLayers.forEach(layer => setLayerAndParentsVisible(layer, false));
+          buildArcgisControlModel();
+          renderComparisonTabs();
+          renderMetricTabs();
+          renderMap();
+        })).catch(error => {
+          console.error(error);
+          
+          
+        });
+      });
     }
 
     function updateAll() {
@@ -978,6 +1204,7 @@
       maintenanceEl.value = s.maintenance;
       borderPenaltyEl.value = 0;
       updateAll();
+      syncArcgisWithDashboardScenario();
     });
     investmentEl.addEventListener('input', updateAll);
     maintenanceEl.addEventListener('input', updateAll);
@@ -1001,9 +1228,22 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    renderComparisonTabs();
-    renderMetricTabs();
-    renderMap();
+    arcgisScenarioSelect.addEventListener('change', () => {
+      const key = arcgisScenarioSelect.value;
+      if (scenarioOrder.includes(key)) {
+        scenarioEl.value = key;
+        currentScenario = key;
+        const s = scenarios[currentScenario];
+        investmentEl.value = s.investment;
+        maintenanceEl.value = s.maintenance;
+        borderPenaltyEl.value = 0;
+        updateAll();
+      }
+      setArcgisScenario(key, true);
+    });
+    arcgisMetricSelect.addEventListener('change', () => setArcgisMetric(arcgisMetricSelect.value));
+
+    initArcGIS();
     updateAll();
   </script>
 </body>

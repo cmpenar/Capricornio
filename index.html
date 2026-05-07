@@ -704,7 +704,7 @@
       }
     };
 
-    const ARCGIS_ITEM_ID = '86d66a694af742b4b7a7759b7c09c5e0';
+    const ARCGIS_ITEM_ID = '9598fa2ef3914dc2b8cbafd5aaa077b5';
 
     const metricDefinitions = {
       apertura: ['apertura comercial', 'trade openness', 'openness', 'apertura'],
@@ -986,12 +986,59 @@
       return layer.title || layer.id || 'Capa sin título';
     }
 
+    function isPersistentReferenceLayer(title) {
+      const n = normalizeText(title);
+      const persistentAliases = [
+        'pasos de frontera',
+        'pasos frontera',
+        'paso de frontera',
+        'paso frontera',
+        'cruces fronterizos',
+        'cruce fronterizo',
+        'border crossings',
+        'border crossing',
+        'frontier crossings',
+        'corredor capricornio',
+        'corredor de capricornio',
+        'capricornio corridor',
+        'capricornio route',
+        'traza corredor',
+        'trazado corredor',
+        'ruta capricornio',
+        'linea corredor',
+        'línea corredor'
+      ];
+
+      return persistentAliases.some(alias => n.includes(normalizeText(alias)));
+    }
+
+    function setPersistentLayersVisible() {
+      arcgisOperationalLayers
+        .filter(layer => layer._dashboardPersistent)
+        .forEach(layer => setLayerAndParentsVisible(layer, true));
+    }
+
+    function getSortedMetricKeysForScenario(scenarioKey) {
+      return Object.keys(arcgisControlModel[scenarioKey] || {})
+        .sort((a, b) => getMetricLabel(a).localeCompare(getMetricLabel(b), 'es'));
+    }
+
+    function getPreferredInitialMetric(metrics) {
+      const populationMetric = metrics.find(m =>
+        normalizeText(getMetricLabel(m)).includes('poblacion') ||
+        normalizeText(getMetricLabel(m)).includes('population')
+      );
+
+      return populationMetric || metrics[0] || null;
+    }
+
     function buildArcgisControlModel() {
       arcgisControlModel = {};
 
       arcgisOperationalLayers.forEach(layer => {
         const title = uniqueLayerTitle(layer);
         const searchTitle = layer._dashboardSearchTitle || title;
+        if (layer._dashboardPersistent || isPersistentReferenceLayer(searchTitle)) return;
         const scenarioKey = layer._dashboardScenarioKey || detectScenario(searchTitle);
         if (!scenarioOrder.includes(scenarioKey)) return;
 
@@ -1007,8 +1054,8 @@
         currentComparison = scenarioOrder.find(key => arcgisControlModel[key]) || currentScenario;
       }
 
-      const metricKeys = Object.keys(arcgisControlModel[currentComparison] || {});
-      currentMetric = metricKeys.includes(currentMetric) ? currentMetric : (metricKeys[0] || null);
+      const metricKeys = getSortedMetricKeysForScenario(currentComparison);
+      currentMetric = getPreferredInitialMetric(metricKeys);
     }
 
     function getScenarioLabel(key) {
@@ -1039,14 +1086,14 @@
       arcgisScenarioSelect.value = currentComparison;
 
       if (!available.length) {
-        layerStatus.innerHTML = 'No se detectaron grupos de Escenario 1, Escenario 2 o Escenario 3 en el WebMap. Revisa que los grupos o capas incluyan esos nombres.';
+        console.warn('No se detectaron grupos de Escenario 1, Escenario 2 o Escenario 3 en el WebMap.');
       }
     }
 
     function renderMetricTabs() {
       arcgisMetricSelect.innerHTML = '';
 
-      const metrics = Object.keys(arcgisControlModel[currentComparison] || {});
+      const metrics = getSortedMetricKeysForScenario(currentComparison);
 
       if (!metrics.length) {
         const opt = document.createElement('option');
@@ -1083,8 +1130,13 @@
 
     function setArcgisScenario(key, resetMetric = true) {
       currentComparison = key;
-      const metrics = Object.keys(arcgisControlModel[currentComparison] || {});
-      if (resetMetric || !metrics.includes(currentMetric)) currentMetric = metrics[0] || null;
+
+      const metrics = getSortedMetricKeysForScenario(currentComparison);
+
+      if (resetMetric || !metrics.includes(currentMetric)) {
+        currentMetric = getPreferredInitialMetric(metrics);
+      }
+
       renderComparisonTabs();
       renderMetricTabs();
       renderMap();
@@ -1109,17 +1161,16 @@
       if (!arcgisOperationalLayers.length) return;
       const selectedLayers = currentMetric ? ((arcgisControlModel[currentComparison] || {})[currentMetric] || []) : [];
 
-      arcgisOperationalLayers.forEach(layer => setLayerAndParentsVisible(layer, false));
+      arcgisOperationalLayers.forEach(layer => {
+        if (layer._dashboardPersistent) {
+          setLayerAndParentsVisible(layer, true);
+        } else {
+          setLayerAndParentsVisible(layer, false);
+        }
+      });
+
       selectedLayers.forEach(layer => setLayerAndParentsVisible(layer, true));
-
-      const scenarioLabel = getScenarioLabel(currentComparison);
-      const metricLabel = getMetricLabel(currentMetric);
-
-      if (selectedLayers.length) {
-        
-      } else {
-        
-      }
+      setPersistentLayersVisible();
     }
 
     function collectArcgisLayers(layer, inheritedScenarioKey = null, inheritedTitle = '') {
@@ -1133,6 +1184,7 @@
 
       layer._dashboardScenarioKey = scenarioFromThisLayer;
       layer._dashboardSearchTitle = combinedTitle;
+      layer._dashboardPersistent = isPersistentReferenceLayer(combinedTitle) || isPersistentReferenceLayer(layerTitle);
       return [layer];
     }
 
@@ -1175,7 +1227,9 @@
         arcgisView.when(() => webmap.when(() => {
           arcgisOperationalLayers = webmap.layers.toArray().flatMap(layer => collectArcgisLayers(layer));
 
-          arcgisOperationalLayers.forEach(layer => setLayerAndParentsVisible(layer, false));
+          arcgisOperationalLayers.forEach(layer => {
+            setLayerAndParentsVisible(layer, !!layer._dashboardPersistent);
+          });
           buildArcgisControlModel();
           renderComparisonTabs();
           renderMetricTabs();

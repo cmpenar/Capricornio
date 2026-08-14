@@ -299,6 +299,275 @@
       .map-select-row { grid-template-columns:1fr; }
     }
 
+    .paper-section { margin-bottom:24px; }
+    .paper-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-top:16px; }
+    .paper-card { border:1px solid var(--line); border-radius:20px; padding:18px; background:#fff; box-shadow:0 8px 18px rgba(15,23,42,.03); }
+    .paper-card .paper-kicker { font-size:.76rem; text-transform:uppercase; letter-spacing:.10em; color:#64748b; font-weight:800; }
+    .paper-card .paper-value { font-size:1.65rem; font-weight:900; margin:8px 0 6px; color:#0f172a; }
+    .paper-card p { margin:0; color:#475569; line-height:1.5; font-size:.92rem; }
+    .paper-callout { margin-top:16px; padding:16px 18px; border-radius:18px; background:#eef4fb; border:1px solid #dbe5f0; color:#334155; line-height:1.55; }
+    .paper-insight { margin-top:14px; border:1px solid var(--line); border-radius:18px; padding:16px; background:linear-gradient(180deg,#fff,#f8fafc); }
+    .paper-insight h4 { margin:0 0 8px; font-size:1rem; }
+    .paper-insight p { margin:0; color:#475569; line-height:1.55; }
+    .policy-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:14px; }
+    .policy-item { border:1px solid var(--line); border-radius:18px; padding:16px; background:#f8fafc; }
+    .policy-item strong { display:block; margin-bottom:6px; }
+    .policy-item span { color:#475569; line-height:1.5; font-size:.92rem; }
+    @media (max-width:1100px){ .paper-grid,.policy-grid{grid-template-columns:1fr 1fr;} }
+    @media (max-width:640px){ .paper-grid,.policy-grid{grid-template-columns:1fr;} }
+
+
+    /* ===== DESIGN REFINEMENT — visual system v2 ===== */
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #10233f;
+      --muted: #66758a;
+      --line: #dfe7f1;
+      --accent: #123a63;
+      --accent-2: #47617d;
+      --navy: #0b2e59;
+      --blue: #2f6fbe;
+      --blue-soft: #eaf2fb;
+      --teal: #188e8a;
+      --teal-soft: #e8f6f4;
+      --gold: #d49a34;
+      --shadow-sm: 0 8px 24px rgba(24, 49, 83, .06);
+      --shadow-md: 0 18px 44px rgba(19, 54, 92, .10);
+      --shadow-lg: 0 28px 70px rgba(8, 34, 66, .18);
+    }
+
+    html { scroll-behavior:smooth; }
+    body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(47,111,190,.10), transparent 26rem),
+        radial-gradient(circle at 92% 8%, rgba(24,142,138,.08), transparent 24rem),
+        linear-gradient(180deg,#f8fbff 0,#f3f6fb 32%,#f5f7fb 100%);
+      letter-spacing: -.01em;
+    }
+    body::before {
+      content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.35;
+      background-image: radial-gradient(rgba(38,77,117,.12) .6px, transparent .6px);
+      background-size: 18px 18px;
+      mask-image: linear-gradient(to bottom,black,transparent 45%);
+    }
+    .wrap { max-width: 1360px; padding: 30px 30px 42px; }
+
+    .hero {
+      position:relative; overflow:hidden; isolation:isolate;
+      background:
+        linear-gradient(118deg, rgba(7,36,70,.98) 0%, rgba(17,67,110,.97) 48%, rgba(21,113,125,.94) 100%);
+      padding: 46px 46px 42px;
+      border-radius: 32px;
+      box-shadow: var(--shadow-lg);
+      border:1px solid rgba(255,255,255,.12);
+      margin-bottom: 22px;
+    }
+    .hero::before {
+      content:""; position:absolute; width:430px; height:430px; border-radius:50%; right:-115px; top:-225px;
+      background:radial-gradient(circle, rgba(255,255,255,.17), rgba(255,255,255,0) 68%); z-index:-1;
+    }
+    .hero::after {
+      content:""; position:absolute; width:360px; height:120px; right:80px; bottom:-54px; border:1px solid rgba(255,255,255,.16);
+      border-radius:999px; transform:rotate(-10deg); z-index:-1; box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 56px rgba(255,255,255,.025);
+    }
+    .hero-top { align-items:center; }
+    .hero-top > div:first-child { max-width: 920px; }
+    .hero h1 {
+      font-size:clamp(2.05rem,3.55vw,3.35rem); line-height:1.06; letter-spacing:-.045em; margin:10px 0 16px;
+      text-wrap:balance; max-width:980px;
+    }
+    .hero p { color:rgba(238,248,255,.84); font-size:1.05rem; line-height:1.6; }
+    .hero-top > div:first-child > div:first-child {
+      display:inline-flex; align-items:center; gap:8px; padding:7px 11px; border-radius:999px;
+      background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16); font-weight:800;
+    }
+    .ghost-btn,.primary-btn,.outline-btn {
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .ghost-btn:hover,.primary-btn:hover,.outline-btn:hover { transform:translateY(-2px); }
+    .ghost-btn { background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.28); }
+    .ghost-btn:hover { background:rgba(255,255,255,.15); }
+    .primary-btn { box-shadow:0 8px 22px rgba(3,22,43,.18); }
+
+    .meta-strip { gap:16px; margin:20px 0 28px; }
+    .meta-box {
+      position:relative; overflow:hidden; background:rgba(255,255,255,.82); backdrop-filter:blur(12px);
+      border:1px solid rgba(207,220,235,.95); border-radius:22px; padding:20px 20px 19px;
+      box-shadow:var(--shadow-sm);
+    }
+    .meta-box::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(var(--blue),var(--teal)); }
+    .meta-box .eyebrow { color:#60738a; font-weight:850; letter-spacing:.11em; }
+    .meta-box .big { font-size:1.22rem; line-height:1.25; color:var(--navy); }
+    .credits { line-height:1.55; }
+
+    .card,.model-showcase,.story-card,.paper-card,.policy-item,.explain-card,.scenario-panel,.scale-card {
+      border-color:rgba(214,225,237,.95);
+    }
+    .card {
+      border-radius:26px; padding:22px; box-shadow:var(--shadow-sm); background:rgba(255,255,255,.96);
+    }
+    .paper-section,.model-showcase { box-shadow:var(--shadow-md); }
+    .paper-section { position:relative; overflow:hidden; padding:30px; }
+    .paper-section::after { content:""; position:absolute; right:-100px; top:-100px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(47,111,190,.08),transparent 70%); pointer-events:none; }
+
+    .eyebrow-dark,.story-kicker {
+      color:#3c6f9f; font-weight:900; letter-spacing:.14em;
+    }
+    .section-title { color:var(--navy); letter-spacing:-.025em; }
+    .section-title.xl { font-size:clamp(1.65rem,2.6vw,2.45rem); line-height:1.12; }
+    .sub { line-height:1.6; }
+
+    .paper-grid { gap:16px; }
+    .paper-card {
+      position:relative; overflow:hidden; min-height:174px; border-radius:22px; padding:20px;
+      box-shadow:none; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+    }
+    .paper-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#bed2e8; }
+    .paper-card::after { content:""; position:absolute; width:90px; height:90px; border-radius:50%; right:-42px; top:-42px; background:rgba(47,111,190,.08); }
+    .paper-card:nth-child(2)::after { background:rgba(24,142,138,.09); }
+    .paper-card:nth-child(3)::after { background:rgba(212,154,52,.10); }
+    .paper-card:nth-child(4)::after { background:rgba(87,91,160,.08); }
+    .paper-card .paper-kicker { color:#6c7f94; }
+    .paper-card .paper-value { color:var(--navy); font-size:1.9rem; letter-spacing:-.04em; }
+    .paper-callout {
+      background:linear-gradient(135deg,#edf5fd 0%,#eef9f8 100%); border-color:#d7e8ef;
+      border-radius:20px; padding:18px 20px; box-shadow:inset 4px 0 0 var(--teal);
+    }
+
+    .model-showcase { padding:30px; border-radius:30px; background:linear-gradient(180deg,#fff 0%,#fbfdff 100%); }
+    .story-card { border-radius:24px; }
+    .story-card.dark { background:linear-gradient(145deg,#edf5fd 0%,#f5f9fd 55%,#eef8f7 100%); }
+    .icon-row { transition:transform .18s ease, border-color .18s ease; }
+    .icon-row:hover { transform:translateX(3px); border-color:#bfd4e8; }
+    .icon-badge { background:linear-gradient(135deg,#dbeafe,#d9f4ef); color:#164d73; }
+    .explain-num { background:linear-gradient(135deg,#dcecff,#e4f6f3); color:#164d73; }
+
+    .layout { grid-template-columns: 330px 1fr; gap:26px; }
+    .controls {
+      top:18px; border-radius:26px; padding:22px; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      box-shadow:0 18px 40px rgba(18,58,99,.09);
+    }
+    .controls::before { content:"Escenarios"; display:inline-flex; font-size:.74rem; text-transform:uppercase; letter-spacing:.13em; font-weight:900; color:#4074a0; margin-bottom:7px; }
+    input,select {
+      border-color:#cedae8; background:#fff; box-shadow:0 1px 0 rgba(10,42,73,.02); transition:border-color .18s ease, box-shadow .18s ease;
+    }
+    input:focus,select:focus { outline:none; border-color:#6fa5d5; box-shadow:0 0 0 4px rgba(47,111,190,.10); }
+
+    .metrics { gap:14px; }
+    .metric-card {
+      position:relative; overflow:hidden; min-height:128px; padding:18px 18px 17px;
+      background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);
+      transition:transform .18s ease,box-shadow .18s ease;
+    }
+    .metric-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .metric-card::before { content:""; position:absolute; left:0; right:0; top:0; height:4px; background:linear-gradient(90deg,var(--blue),var(--teal)); opacity:.9; }
+    .metric-card .k { font-weight:750; color:#6a7b90; }
+    .metric-card .v { color:var(--navy); font-size:2.05rem; letter-spacing:-.045em; }
+
+    .grid-2 > .card { padding:22px; }
+    .chart-box { height:380px; padding-top:4px; }
+    .tabs,.metric-tabs { gap:9px; }
+    .tab,.metric-tab { border-color:#cfdae7; background:#f8fbff; color:#4e6780; transition:all .18s ease; }
+    .tab:hover,.metric-tab:hover { border-color:#9db9d3; background:#f0f6fc; }
+    .tab.active,.metric-tab.active { background:linear-gradient(135deg,#123a63,#1e6578); border-color:transparent; box-shadow:0 7px 16px rgba(18,58,99,.16); }
+
+    .scenario-hero { gap:18px; }
+    .scenario-panel { padding:20px; border-radius:22px; background:linear-gradient(155deg,#fff,#f8fbff); }
+    .scenario-tag { background:linear-gradient(135deg,#123a63,#1d6877); box-shadow:0 7px 18px rgba(18,58,99,.14); }
+    .scenario-message { border-left:0; border:1px solid #d5e5ef; border-radius:18px; background:linear-gradient(135deg,#edf5fd,#eef8f7); position:relative; padding-left:20px; }
+    .scenario-message::before { content:""; position:absolute; left:0; top:14px; bottom:14px; width:4px; border-radius:6px; background:linear-gradient(var(--blue),var(--teal)); }
+    .scale-card { border-radius:20px; padding:16px; background:linear-gradient(180deg,#fff,#fbfdff); }
+    .scale-card .scale-main { color:var(--navy); font-size:1.5rem; }
+
+    .paper-insight { border-radius:20px; padding:18px; background:linear-gradient(160deg,#fff,#f8fbff); }
+    .policy-grid { gap:16px; }
+    .policy-item { position:relative; overflow:hidden; border-radius:20px; padding:19px; background:#fff; box-shadow:0 6px 16px rgba(25,52,83,.035); }
+    .policy-item::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--blue); opacity:.75; }
+    .policy-item:nth-child(2)::before { background:var(--teal); }
+    .policy-item:nth-child(3)::before { background:var(--gold); }
+
+    #mapas { padding:26px; box-shadow:var(--shadow-md); }
+    .arcgis-map { border-radius:22px; border-color:#d1dfec; box-shadow:inset 0 0 0 1px rgba(255,255,255,.5); }
+    .map-select-row { background:#f7faff; border:1px solid #e0e8f2; padding:14px; border-radius:18px; }
+
+    .authors { padding:28px; }
+    .footer-page { padding-top:10px; border-top:1px solid #dce6f0; }
+    .modal { border-radius:30px; box-shadow:0 30px 90px rgba(8,34,66,.24); }
+    .note-item { border-radius:18px; background:linear-gradient(180deg,#fff,#fbfdff); }
+
+    @media (max-width:1100px) {
+      .wrap { padding:22px; }
+      .hero { padding:34px 30px; }
+      .layout { grid-template-columns:1fr; }
+    }
+    @media (max-width:640px) {
+      .wrap { padding:12px; }
+      .hero { padding:28px 22px; border-radius:26px; }
+      .hero h1 { font-size:1.95rem; }
+      .card,.paper-section,.model-showcase,#mapas { padding:18px; border-radius:22px; }
+      .meta-box { border-radius:18px; }
+    }
+
+
+    /* ===== IMPLICACIONES DEL PAPER — editorial policy section ===== */
+    .policy-section-v2 {
+      position:relative; overflow:hidden; margin-bottom:24px; padding:32px;
+      background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+    }
+    .policy-section-v2::before {
+      content:""; position:absolute; width:340px; height:340px; right:-155px; top:-165px;
+      border-radius:50%; background:radial-gradient(circle,rgba(47,111,190,.11),transparent 68%); pointer-events:none;
+    }
+    .policy-section-v2::after {
+      content:""; position:absolute; width:260px; height:260px; left:-160px; bottom:-165px;
+      border-radius:50%; background:radial-gradient(circle,rgba(24,142,138,.09),transparent 70%); pointer-events:none;
+    }
+    .policy-head-v2 { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr); gap:28px; align-items:end; margin-bottom:22px; }
+    .policy-head-v2 .sub { margin-bottom:0; max-width:820px; }
+    .policy-quote-v2 {
+      padding:18px 20px; border-radius:20px; border:1px solid #d7e5f1;
+      background:linear-gradient(135deg,#eef5fc,#edf9f7); color:#294963; line-height:1.55;
+      box-shadow:inset 4px 0 0 var(--teal);
+    }
+    .policy-quote-v2 strong { color:var(--navy); }
+    .policy-grid-v2 { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .policy-card-v2 {
+      position:relative; min-height:235px; padding:20px 20px 19px; border:1px solid #dbe5ef; border-radius:22px;
+      background:#fff; box-shadow:0 8px 22px rgba(20,55,89,.045); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+    }
+    .policy-card-v2:hover { transform:translateY(-3px); box-shadow:0 16px 32px rgba(20,55,89,.09); border-color:#bfd2e5; }
+    .policy-card-top-v2 { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .policy-num-v2 {
+      width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#e1edfa,#e5f6f3); color:#164e73; font-size:.9rem; font-weight:900;
+      border:1px solid #d5e4ef;
+    }
+    .policy-tag-v2 {
+      display:inline-flex; padding:7px 10px; border-radius:999px; background:#f2f6fa; color:#60778e;
+      font-size:.72rem; font-weight:850; text-transform:uppercase; letter-spacing:.08em;
+    }
+    .policy-card-v2 h4 { margin:0 0 9px; color:var(--navy); font-size:1.08rem; line-height:1.28; letter-spacing:-.02em; }
+    .policy-card-v2 p { margin:0; color:#536a80; line-height:1.58; font-size:.93rem; }
+    .policy-stat-v2 { margin-top:15px; padding-top:14px; border-top:1px solid #e7edf4; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+    .policy-stat-v2 strong { color:var(--navy); font-size:1.22rem; letter-spacing:-.03em; }
+    .policy-stat-v2 span { color:#73869a; font-size:.82rem; font-weight:700; }
+    .policy-action-v2 {
+      position:relative; z-index:1; margin-top:18px; padding:20px; border-radius:22px;
+      background:linear-gradient(118deg,#0c315d 0%,#144f78 55%,#15727b 100%); color:#fff; overflow:hidden;
+    }
+    .policy-action-v2::after { content:""; position:absolute; width:240px; height:240px; right:-100px; top:-150px; border-radius:50%; background:rgba(255,255,255,.08); }
+    .policy-action-head-v2 { position:relative; z-index:1; display:flex; justify-content:space-between; gap:16px; align-items:flex-end; margin-bottom:14px; flex-wrap:wrap; }
+    .policy-action-head-v2 h4 { margin:0; font-size:1.15rem; letter-spacing:-.02em; }
+    .policy-action-head-v2 span { color:rgba(239,249,255,.76); font-size:.9rem; }
+    .policy-action-grid-v2 { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .policy-action-item-v2 { padding:14px 15px; border-radius:16px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); }
+    .policy-action-item-v2 strong { display:block; margin-bottom:5px; font-size:.91rem; }
+    .policy-action-item-v2 span { display:block; color:rgba(239,249,255,.78); font-size:.84rem; line-height:1.45; }
+    .policy-source-v2 { position:relative; z-index:1; margin:14px 2px 0; color:#7a8da0; font-size:.82rem; line-height:1.5; }
+    @media (max-width:1100px){ .policy-head-v2{grid-template-columns:1fr;} .policy-grid-v2{grid-template-columns:1fr 1fr;} }
+    @media (max-width:720px){ .policy-section-v2{padding:22px;} .policy-grid-v2,.policy-action-grid-v2{grid-template-columns:1fr;} .policy-card-v2{min-height:0;} }
+
   </style>
 </head>
 <body>
@@ -308,9 +577,15 @@
         <div>
           <div style="text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; opacity: .82;">Capricornio App</div>
           <h1>Efectos sobre la población y el crecimiento por la mejora del Corredor de Capricornio</h1>
-          <p>Dashboard + calculadora del Corredor Capricornio</p>
+          <p>Explora los escenarios contrafactuales, sus impactos territoriales y los principales hallazgos del estudio.</p>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <label for="languageSelect" style="position:absolute;left:-9999px;">Idioma</label>
+          <select id="languageSelect" aria-label="Idioma" style="width:auto;min-width:132px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.28);font-weight:800;padding:10px 12px;border-radius:12px;">
+            <option value="es" selected style="color:#0f172a;">Español</option>
+            <option value="en" style="color:#0f172a;">English</option>
+            <option value="pt" style="color:#0f172a;">Português</option>
+          </select>
           <button class="ghost-btn" id="openMethodology">Metodología del modelo</button>
           <a class="primary-btn" href="#mapas" style="text-decoration:none; display:inline-flex; align-items:center;">Ver mapas</a>
         </div>
@@ -334,6 +609,35 @@
         <div class="big">¿Qué cambia cuando mejora el corredor?</div>
         <div class="credits">Se estima el valor de completar tramos faltantes y también el valor económico del corredor ya consolidado.</div>
       </div>
+    </section>
+
+    <section class="card paper-section">
+      <div class="eyebrow-dark">EL PAPER EN CIFRAS</div>
+      <h3 class="section-title xl">Contexto y alcance del análisis</h3>
+      <p class="sub wide">Estas cifras resumen la escala espacial del estudio y uno de sus principales mecanismos: una intervención localizada puede modificar las rutas óptimas y transmitir efectos mucho más allá de los tramos intervenidos.</p>
+      <div class="paper-grid">
+        <div class="paper-card">
+          <div class="paper-kicker">Corredor</div>
+          <div class="paper-value">≈ 2.000 millas</div>
+          <p>Ruta bioceánica que conecta Chile, Argentina, Paraguay y Brasil, vinculando puertos del Pacífico con el Atlántico.</p>
+        </div>
+        <div class="paper-card">
+          <div class="paper-kicker">Área de estudio</div>
+          <div class="paper-value">162 economías</div>
+          <p>El análisis descriptivo del entorno del corredor considera 162 economías locales; 40 están directamente sobre el CC.</p>
+        </div>
+        <div class="paper-card">
+          <div class="paper-kicker">Modelo regional</div>
+          <div class="paper-value">1.697 territorios</div>
+          <p>El equilibrio dinámico se simula para 1.697 economías territoriales de América del Sur, conectadas por comercio y migración.</p>
+        </div>
+        <div class="paper-card">
+          <div class="paper-kicker">Efecto de red</div>
+          <div class="paper-value">7 → 180</div>
+          <p>En el ejercicio de 390 km, 7 localizaciones reciben la mejora directa, pero 180 registran cambios en costos bilaterales de comercio.</p>
+        </div>
+      </div>
+      <div class="paper-callout"><strong>Por qué importa:</strong> el paper estima que, en el ejercicio de dos puentes y mejoras viales, el costo directo de transporte cae en promedio 3,75% en las localizaciones intervenidas, mientras los costos bilaterales de comercio caen 17,29% en 180 localizaciones. Esto muestra que el valor del corredor no se limita al tramo físico intervenido.</div>
     </section>
 
     <section class="model-intro">
@@ -482,24 +786,24 @@
 <section class="layout">
       <aside class="card controls">
         <h2>Parámetros</h2>
-        <p class="sub">Cambia escenario y supuestos para actualizar los resultados.</p>
+        <p class="sub">Selecciona uno de los tres ejercicios contrafactuales reportados en el paper. Por ahora, los mapas se mantienen sin cambios.</p>
 
         <div class="field">
           <label for="scenario">Escenario</label>
           <select id="scenario"></select>
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none;">
           <label for="investment">Inversión total (US$ millones)</label>
           <input id="investment" type="number" />
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none;">
           <label for="maintenance">Mantenimiento anual (US$ millones)</label>
           <input id="maintenance" type="number" />
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none;">
           <label for="borderPenalty">Penalización por fronteras: <span id="borderPenaltyLabel">0%</span></label>
           <input id="borderPenalty" type="range" min="0" max="100" step="1" value="0" />
           <div class="hint">Simula cuánto se erosionan los beneficios por demoras, costos o fricción fronteriza.</div>
@@ -514,14 +818,14 @@
 
         <section class="grid-2">
           <div class="card">
-            <h3 class="section-title">Gráfico del escenario</h3>
-            <p class="sub">Impacto medio vs. máximo observado en cada variable.</p>
+            <h3 class="section-title" id="primaryChartTitle">Gráfico del escenario</h3>
+            <p class="sub" id="primaryChartSubtitle">Impacto medio vs. máximo observado en cada variable.</p>
             <div class="chart-box"><canvas id="radarChart"></canvas></div>
           </div>
 
           <div class="card">
-            <h3 class="section-title">Resultados por territorio</h3>
-            <p class="sub">Bienestar ajustado por territorio, con el castigo de frontera aplicado.</p>
+            <h3 class="section-title" id="secondaryChartTitle">Resultados por territorio</h3>
+            <p class="sub" id="secondaryChartSubtitle">Bienestar ajustado por territorio, con el castigo de frontera aplicado.</p>
             <div class="chart-box"><canvas id="barChart"></canvas></div>
           </div>
         </section>
@@ -533,11 +837,81 @@
           </p>
           <div class="scenario-hero" id="scenarioStory"></div>
           <div class="scale-grid" id="scaleGrid"></div>
+          <div class="paper-insight" id="paperScenarioInsight"></div>
           <div class="mini-grid" id="miniMetrics"></div>
           <div class="status" id="quickReading"></div>
           <p class="scenario-note">
             Nota: SAC significa <em>South American Countries</em> —países de América del Sur—. En este dashboard, los impactos agregados SAC muestran promedios regionales sobre 1,697 economías territoriales; por eso pueden ser menores que los efectos observados dentro del corredor o en las zonas más beneficiadas.
           </p>
+        </section>
+
+
+        <section class="card policy-section-v2">
+          <div class="policy-head-v2">
+            <div>
+              <div class="eyebrow-dark">IMPLICACIONES DEL PAPER</div>
+              <h3 class="section-title" style="font-size:clamp(1.55rem,2.3vw,2.15rem);margin-bottom:10px;">Qué significan los resultados para la política pública</h3>
+              <p class="sub">Los resultados sugieren que el valor del Corredor de Capricornio no depende únicamente de construir infraestructura. La magnitud, distribución y permanencia de los beneficios están condicionadas por la continuidad de la red, la eficiencia de las fronteras, la capacidad de atraer inversión y las características productivas de cada territorio.</p>
+            </div>
+            <div class="policy-quote-v2"><strong>Lectura central:</strong> la conectividad debe tratarse como una estrategia integrada. Infraestructura, facilitación fronteriza y desarrollo territorial actúan de manera complementaria y determinan cuánto del beneficio potencial llega realmente a cada economía local.</div>
+          </div>
+
+          <div class="policy-grid-v2">
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">01</div><div class="policy-tag-v2">Escala</div></div>
+              <h4>La continuidad del corredor determina el alcance regional</h4>
+              <p>Las inversiones de mayor escala y con continuidad física generan efectos de integración más amplios. En cambio, intervenciones pequeñas producen mejoras positivas, pero principalmente concentradas alrededor de los tramos intervenidos.</p>
+              <div class="policy-stat-v2"><strong>Local → regional</strong><span>el alcance crece con la escala de intervención</span></div>
+            </article>
+
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">02</div><div class="policy-tag-v2">Fronteras</div></div>
+              <h4>La infraestructura física no basta si persisten fricciones fronterizas</h4>
+              <p>Los costos de frontera reducen especialmente los beneficios en los territorios que más podrían ganar con una mejor conectividad. Por eso, la modernización de pasos, aduanas y procesos de facilitación comercial es parte de la inversión económica del corredor.</p>
+              <div class="policy-stat-v2"><strong>≈ −30%</strong><span>beneficios estimados al incorporar fricción fronteriza</span></div>
+            </article>
+
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">03</div><div class="policy-tag-v2">Inversión</div></div>
+              <h4>La inversión privada puede amplificar fuertemente la conectividad</h4>
+              <p>Cuando la mejora del corredor se combina con un aumento exógeno de inversión de firmas en Salta y Boquerón, el efecto de inversión domina al de infraestructura en las variables analizadas y refuerza los impactos de largo plazo.</p>
+              <div class="policy-stat-v2"><strong>+24,76%</strong><span>comercio en el efecto combinado del escenario 3</span></div>
+            </article>
+
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">04</div><div class="policy-tag-v2">Territorio</div></div>
+              <h4>Los beneficios son positivos, pero no se distribuyen de forma uniforme</h4>
+              <p>El modelo encuentra ganadores importantes junto con territorios de impacto bajo o incluso negativo. Las condiciones iniciales de aislamiento, acceso a mercados, población y estructura productiva explican parte de esta heterogeneidad.</p>
+              <div class="policy-stat-v2"><strong>Heterogeneidad</strong><span>la media regional oculta diferencias locales relevantes</span></div>
+            </article>
+
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">05</div><div class="policy-tag-v2">Red</div></div>
+              <h4>Una intervención localizada puede generar efectos mucho más allá del tramo</h4>
+              <p>La reconfiguración de las rutas óptimas transmite los beneficios a lugares no intervenidos directamente. Esta es una de las razones por las que el paper enfatiza medir costos bilaterales de comercio y no solo ahorros directos de transporte.</p>
+              <div class="policy-stat-v2"><strong>7 → 180</strong><span>localizaciones: efecto directo vs. costos bilaterales</span></div>
+            </article>
+
+            <article class="policy-card-v2">
+              <div class="policy-card-top-v2"><div class="policy-num-v2">06</div><div class="policy-tag-v2">Priorización</div></div>
+              <h4>La evaluación espacial ayuda a priorizar dónde invertir primero</h4>
+              <p>Al identificar con detalle dónde se concentran los retornos sociales y los spillovers, el modelo ofrece una base para ordenar inversiones, coordinar políticas entre países y orientar recursos hacia territorios con mayor potencial de transformación.</p>
+              <div class="policy-stat-v2"><strong>1.697</strong><span>economías territoriales consideradas en la simulación regional</span></div>
+            </article>
+          </div>
+
+          <div class="policy-action-v2">
+            <div class="policy-action-head-v2">
+              <h4>Una agenda de integración en tres frentes</h4>
+              <span>La conclusión del paper apunta a una intervención complementaria, no aislada.</span>
+            </div>
+            <div class="policy-action-grid-v2">
+              <div class="policy-action-item-v2"><strong>01 · Infraestructura continua</strong><span>Completar enlaces críticos, puentes y tramos viales para que la red funcione como corredor y no como intervenciones fragmentadas.</span></div>
+              <div class="policy-action-item-v2"><strong>02 · Fronteras eficientes</strong><span>Reducir demoras, costos administrativos y barreras institucionales que pueden absorber una parte importante de las ganancias de conectividad.</span></div>
+              <div class="policy-action-item-v2"><strong>03 · Desarrollo territorial</strong><span>Crear condiciones para inversión, productividad e innovación en los territorios con potencial, aprovechando el mayor acceso a mercados.</span></div>
+            </div>
+          </div>
+          <p class="policy-source-v2">Síntesis basada en las conclusiones y resultados del Working Paper Capricornio: efectos distributivos, fricciones fronterizas, respuesta de inversión privada y complementariedad entre infraestructura y políticas territoriales.</p>
         </section>
 
         <section class="card" id="mapas">
@@ -603,106 +977,10 @@
 
   <script>
     const scenarios = {
-      partial: {
-        label: '3. Intervención mínima',
-        tag: 'Bajo impacto',
-        headline: 'Prueba conservadora con retornos reducidos',
-        title: 'Escenario 3: upgrade parcial de vías secundarias',
-        description: 'Escenario conservador: mejora 310 km de vías secundarias a primarias y construye 80 km nuevos en tramos sin infraestructura. Impactos muy localizados.',
-        annualWelfare: 19.5,
-        investment: 244,
-        maintenance: 4.5,
-        roi: 2.58,
-        trade: 0.01,
-        population: 0.01,
-        gdp: 0.01,
-        productivity: 0.00,
-        utility: 0.00,
-        wages: 0.00,
-        corridorTrade: 0.24,
-        corridorPopulation: 0.20,
-        corridorGdp: 0.16,
-        maxTrade: 1.83,
-        maxPopulation: 1.52,
-        maxGdp: 1.25,
-        maxProductivity: 0.06,
-        maxWages: 0.04,
-        areas: [
-          { name: 'Argentina', value: 214.82 },
-          { name: 'Paraguay', value: 130.12 },
-          { name: 'Chile', value: 98.85 },
-          { name: 'Brasil', value: 3.30 },
-          { name: 'Perú', value: 1.37 },
-          { name: 'Bolivia', value: -62.55 },
-        ],
-      },
-      completion: {
-        label: '1. Cerrar brechas del corredor',
-        tag: 'Impacto local',
-        headline: 'Conecta tramos faltantes y concentra beneficios cerca del corredor',
-        title: 'Escenario 1: completar tramos faltantes del CC',
-        description: 'Construcción de nueva vía primaria en 390 km para conectar localizaciones previamente aisladas en Argentina y Paraguay. Beneficios moderados y concentrados.',
-        annualWelfare: 59.9,
-        investment: 585,
-        maintenance: 11.0,
-        roi: 6.55,
-        trade: 0.03,
-        population: 0.02,
-        gdp: 0.02,
-        productivity: 0.01,
-        utility: 0.01,
-        wages: 0.00,
-        corridorTrade: 0.56,
-        corridorPopulation: 0.46,
-        corridorGdp: 0.38,
-        maxTrade: 8.19,
-        maxPopulation: 6.69,
-        maxGdp: 5.46,
-        maxProductivity: 0.14,
-        maxWages: 0.10,
-        areas: [
-          { name: 'Argentina', value: 535.34 },
-          { name: 'Chile', value: 414.68 },
-          { name: 'Paraguay', value: 363.00 },
-          { name: 'Brasil', value: 5.33 },
-          { name: 'Perú', value: 1.30 },
-          { name: 'Bolivia', value: -114.79 },
-        ],
-      },
-      bioceanic: {
-        label: '2. Integración regional total',
-        tag: 'Impacto sistémico',
-        headline: 'Transforma el corredor en una red continua de alta capacidad',
-        title: 'Escenario 2: construcción del corredor bioceánico',
-        description: 'Intervención de gran escala: corredor continuo de alta capacidad desde puertos chilenos del Pacífico hasta Santos, Brasil. Genera los impactos sistémicos más altos.',
-        annualWelfare: 9101,
-        investment: 22750,
-        maintenance: 4000,
-        roi: 31.04,
-        trade: 0.39,
-        population: 0.31,
-        gdp: 0.28,
-        productivity: 0.09,
-        utility: 0.18,
-        wages: 0.08,
-        corridorTrade: 9.17,
-        corridorPopulation: 7.50,
-        corridorGdp: 6.12,
-        maxTrade: 16.96,
-        maxPopulation: 13.82,
-        maxGdp: 11.22,
-        maxProductivity: 2.20,
-        maxWages: 1.55,
-        areas: [
-          { name: 'Brasil', value: 146153.72 },
-          { name: 'Chile', value: 18572.14 },
-          { name: 'Argentina', value: 12630.52 },
-          { name: 'Paraguay', value: 2214.13 },
-          { name: 'Perú', value: 851.38 },
-          { name: 'Bolivia', value: 498.45 },
-        ],
-      }
-    };
+completion:{label:'1. Valor económico del CC existente',tag:'Remoción del corredor',headline:'Valor económico de la infraestructura existente',title:'Contrafactual 1: remover el CC existente',description:'Se elimina la infraestructura del corredor existente para medir la pérdida de bienestar y actividad económica que produciría su ausencia.',annualWelfare:7028.9,investment:0,maintenance:0,roi:12.2,trade:11.20,population:8.44,gdp:7.50,productivity:2.57,utility:0,wages:1.97,corridorTrade:11.20,corridorPopulation:8.44,corridorGdp:7.50,maxTrade:47.90,maxPopulation:39.43,maxGdp:32.36,maxProductivity:11.44,maxWages:8.49,areas:[{name:'Norte Argentina',value:1433.3},{name:'Norte Chile',value:554.3},{name:'Suroeste Brasil',value:4945.9},{name:'Paraguay',value:57.3},{name:'Sur Bolivia',value:31.4},{name:'Sur Perú',value:6.7}]},
+bioceanic:{label:'2. Completar los tramos faltantes del CC',tag:'Completamiento del corredor',headline:'Dos puentes fronterizos y mejoras viales en Argentina y Paraguay',title:'Contrafactual 2: completar el CC',description:'Construcción de dos puentes fronterizos y mejora de aproximadamente 385–390 km de vías en los tramos donde el corredor carece de infraestructura adecuada para carga.',annualWelfare:59.9,investment:697.5,maintenance:27.9,roi:6.55,trade:1.34,population:1.34,gdp:1.10,productivity:0.39,utility:0,wages:0.29,corridorTrade:1.34,corridorPopulation:1.34,corridorGdp:1.10,maxTrade:5.85,maxPopulation:5.85,maxGdp:4.80,maxProductivity:1.68,maxWages:1.24,areas:[{name:'Norte Argentina',value:28.89},{name:'Sur Bolivia',value:-5.72},{name:'Suroeste Brasil',value:0.29},{name:'Norte Chile',value:18.35},{name:'Paraguay central',value:18.02},{name:'Sur Perú',value:0.07}]},
+partial:{label:'3. Completar CC + 10% de inversión',tag:'Infraestructura + inversión',headline:'Completamiento del corredor combinado con mayor inversión privada',title:'Contrafactual 3: completar el CC + aumento exógeno de 10% en inversión',description:'Se combina el completamiento del CC con un aumento exógeno de 10% en la inversión en innovación de firmas para 17 localizaciones tratadas en Salta y Boquerón; los efectos se evalúan después de 20 años.',annualWelfare:0,investment:0,maintenance:0,roi:0,trade:24.76,population:13.97,gdp:11.32,productivity:110.81,utility:6.74,wages:9.03,corridorTrade:24.76,corridorPopulation:13.97,corridorGdp:11.32,maxTrade:29.81,maxPopulation:17.71,maxGdp:14.31,maxProductivity:112.98,maxUtility:8.50,maxWages:9.79,minTrade:-2.73,minPopulation:-2.18,minGdp:-1.79,minProductivity:-0.74,minUtility:-1.09,minWages:-0.57,treated:{population:14.02,gdp:11.36,productivity:110.82,utility:6.77,trade:24.82,wages:9.04},notTreated:{population:0.05,gdp:0.04,productivity:0.01,utility:0.03,trade:0.06,wages:0.01},areas:[]}
+};
 
     const ARCGIS_ITEM_ID = '9598fa2ef3914dc2b8cbafd5aaa077b5';
 
@@ -743,9 +1021,9 @@
       'zeros-base': 'Zeros → Base',
       'base-capricornio': 'Base → Capricornio',
       'zeros-capricornio': 'Zeros → Capricornio',
-      completion: '1. Cerrar brechas del corredor',
-      bioceanic: '2. Integración regional total',
-      partial: '3. Intervención mínima'
+      completion: '1. Valor económico del CC existente',
+      bioceanic: '2. Completar tramos faltantes del CC',
+      partial: '3. Completar CC + 10% de inversión'
     };
 
     let arcgisView = null;
@@ -763,6 +1041,11 @@
     const quickReading = document.getElementById('quickReading');
     const scenarioStory = document.getElementById('scenarioStory');
     const scaleGrid = document.getElementById('scaleGrid');
+    const paperScenarioInsight = document.getElementById('paperScenarioInsight');
+    const primaryChartTitle = document.getElementById('primaryChartTitle');
+    const primaryChartSubtitle = document.getElementById('primaryChartSubtitle');
+    const secondaryChartTitle = document.getElementById('secondaryChartTitle');
+    const secondaryChartSubtitle = document.getElementById('secondaryChartSubtitle');
             const arcgisScenarioSelect = document.getElementById('arcgisScenarioSelect');
     const arcgisMetricSelect = document.getElementById('arcgisMetricSelect');
     const openMethodology = document.getElementById('openMethodology');
@@ -774,7 +1057,7 @@
     let currentComparison = 'base-capricornio';
     let currentMetric = 'gdp';
 
-    // Orden explícito para que el desplegable muestre Escenario 1, 2 y 3.
+    // Tres ejercicios contrafactuales reportados en el paper.
     const scenarioOrder = ['completion', 'bioceanic', 'partial'];
 
     scenarioOrder.forEach((key) => {
@@ -809,6 +1092,9 @@
 
     function getScenarioInsight(state) {
       const s = state.s;
+      if (currentScenario === 'partial') {
+        return 'Este ejercicio no se interpreta con TIR ni con beneficios monetarios. El paper compara los efectos sobre seis resultados después de 20 años y muestra que el componente de inversión domina el efecto de infraestructura, especialmente en productividad, salarios y utilidad.';
+      }
       if (s.roi >= 25) {
         return 'Escenario de alto impacto regional: la escala de inversión reduce costos de transporte de forma suficiente para generar spillovers amplios, con ganancias importantes dentro y fuera del corredor.';
       }
@@ -832,6 +1118,27 @@
         </div>
       `;
 
+      if (currentScenario === 'partial') {
+        scaleGrid.innerHTML = `
+          <div class="scale-card">
+            <div class="scale-title"><span class="kpi-emoji">📍</span><span>Localizaciones tratadas</span></div>
+            <div class="scale-main">17</div>
+            <div class="scale-copy">Localizaciones específicas de Salta (Argentina) y Boquerón (Paraguay).</div>
+          </div>
+          <div class="scale-card">
+            <div class="scale-title"><span class="kpi-emoji">↗</span><span>Shock de inversión</span></div>
+            <div class="scale-main">+10%</div>
+            <div class="scale-copy">Aumento exógeno de la inversión en innovación introducido en 2005.</div>
+          </div>
+          <div class="scale-card">
+            <div class="scale-title"><span class="kpi-emoji">⏱</span><span>Horizonte del efecto</span></div>
+            <div class="scale-main">20 años</div>
+            <div class="scale-copy">Resultados de largo plazo reportados para el ejercicio combinado.</div>
+          </div>
+        `;
+        return;
+      }
+
       const maxImpact = Math.max(s.maxTrade, s.maxPopulation, s.maxGdp);
       scaleGrid.innerHTML = `
         <div class="scale-card">
@@ -852,13 +1159,43 @@
       `;
     }
 
+
+    function renderPaperScenarioInsight(state) {
+      const s = state.s;
+      if (currentScenario === 'completion') {
+        paperScenarioInsight.innerHTML = `
+          <h4>Qué agrega el paper sobre este escenario</h4>
+          <p>La remoción del corredor permite valorar la infraestructura ya existente. Para las localizaciones del CC, el efecto neto estimado es de <strong>+11,20% en comercio</strong>, <strong>+8,44% en población</strong>, <strong>+7,50% en PIB per cápita</strong>, <strong>+2,57% en productividad</strong> y <strong>+1,97% en salarios</strong>. Además, el bienestar anual asociado al corredor alcanza aproximadamente <strong>US$ 7.028,9 millones</strong>.</p>`;
+      } else if (currentScenario === 'bioceanic') {
+        paperScenarioInsight.innerHTML = `
+          <h4>Qué agrega el paper sobre este escenario</h4>
+          <p>El completamiento incluye los puentes <strong>Carmelo Peralta–Porto Murtinho</strong> y <strong>Pozo Hondo</strong>, junto con mejoras de <strong>226 km en Paraguay</strong> y <strong>159 km en Argentina</strong>. El efecto medio es pequeño pero positivo: <strong>+1,34% en comercio y población</strong> y <strong>+1,10% en PIB per cápita</strong>; los máximos locales alcanzan <strong>5,85%</strong> en comercio y población.</p>`;
+      } else {
+        paperScenarioInsight.innerHTML = `
+          <h4>Qué agrega el paper sobre este escenario</h4>
+          <p>El ejercicio combinado muestra que el <strong>efecto de la inversión domina al de la infraestructura</strong>. El efecto neto llega a <strong>+110,81% en productividad</strong>, <strong>+24,76% en comercio</strong>, <strong>+13,97% en población</strong>, <strong>+11,32% en PIB per cápita</strong>, <strong>+9,03% en salarios</strong> y <strong>+6,74% en utilidad</strong>.</p>`;
+      }
+    }
+
     function renderMetricCards(state) {
-      const cards = [
-        { label: 'Ganancia anual ajustada', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
-        { label: 'TIR / IRR del reporte', value: `${fmtNumber(state.s.roi, 2)}%` },
-        { label: 'Beneficio anual neto', value: `US$ ${fmtNumber(state.netAnnualBenefit)} M` },
-        { label: 'Payback simple estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
-      ];
+      let cards;
+      if (currentScenario === 'partial') {
+        cards = [
+          { label: 'Población (migración)', value: `${fmtNumber(state.s.population, 2)}%` },
+          { label: 'PIB per cápita', value: `${fmtNumber(state.s.gdp, 2)}%` },
+          { label: 'Productividad', value: `${fmtNumber(state.s.productivity, 2)}%` },
+          { label: 'Utilidad', value: `${fmtNumber(state.s.utility, 2)}%` },
+          { label: 'Comercio total', value: `${fmtNumber(state.s.trade, 2)}%` },
+          { label: 'Salarios', value: `${fmtNumber(state.s.wages, 2)}%` },
+        ];
+      } else {
+        cards = [
+          { label: 'Ganancia anual ajustada', value: `US$ ${fmtNumber(state.annualWelfare)} M` },
+          { label: 'TIR / IRR del reporte', value: `${fmtNumber(state.s.roi, 2)}%` },
+          { label: 'Beneficio anual neto', value: `US$ ${fmtNumber(state.netAnnualBenefit)} M` },
+          { label: 'Payback simple estimado', value: state.paybackYears ? `${fmtNumber(state.paybackYears, 1)} años` : 'No recupera' },
+        ];
+      }
       metricsEl.innerHTML = cards.map(c => `
         <div class="card metric-card">
           <div class="k">${c.label}</div>
@@ -868,6 +1205,33 @@
     }
 
     function renderMiniMetrics(state) {
+      if (currentScenario === 'partial') {
+        const items = [
+          ['Tratadas · Población', state.s.treated.population],
+          ['Tratadas · PIB pc', state.s.treated.gdp],
+          ['Tratadas · Productividad', state.s.treated.productivity],
+          ['Tratadas · Utilidad', state.s.treated.utility],
+          ['Tratadas · Comercio', state.s.treated.trade],
+          ['Tratadas · Salarios', state.s.treated.wages],
+        ];
+        miniMetricsEl.innerHTML = items.map(([n,v]) => `
+          <div class="mini-item">
+            <div class="n">${n}</div>
+            <div class="x">${fmtNumber(v, 2)}%</div>
+          </div>
+        `).join('');
+
+        selectedScenarioSummary.innerHTML = `
+          <strong>${state.s.title}</strong><br>
+          <span style="display:inline-block;margin:8px 0;padding:6px 10px;border-radius:999px;background:#e2e8f0;color:#0f172a;font-weight:800;font-size:.82rem;">${state.s.tag}</span><br>
+          ${state.s.description}<br><br>
+          <strong>Indicadores reportados:</strong> población, PIB per cápita, productividad, utilidad, comercio total y salarios. No se reportan TIR, payback ni beneficio monetario para este ejercicio.
+        `;
+
+        quickReading.innerHTML = `<strong>Cómo leerlo:</strong> las tarjetas superiores muestran el <em>efecto combinado neto</em> (tratadas menos no tratadas) de completar el CC y aumentar 10% la inversión. Las tarjetas pequeñas muestran el nivel observado en las 17 localizaciones tratadas.`;
+        return;
+      }
+
       const items = [
         ['Trade SAC', state.s.trade],
         ['Población SAC', state.s.population],
@@ -889,12 +1253,7 @@
         Inversión base: <strong>US$ ${fmtNumber(state.s.investment)} M</strong> · TIR: <strong>${fmtNumber(state.s.roi, 2)}%</strong> · Ganancia anual base: <strong>US$ ${fmtNumber(state.s.annualWelfare)} M</strong>.
       `;
 
-      quickReading.innerHTML = `
-        Con una penalización fronteriza de <strong>${state.borderPenalty}%</strong>, la ganancia anual ajustada queda en
-        <strong>US$ ${fmtNumber(state.annualWelfare)} M</strong>. El beneficio neto anual es
-        <strong>${state.netAnnualBenefit >= 0 ? 'positivo' : 'negativo'}</strong> y el mayor beneficio territorial estimado corresponde a
-        <strong>${[...state.adjustedAreas].sort((a,b)=>b.adjusted-a.adjusted)[0].name}</strong>. La lectura clave es comparar siempre tres escalas: promedio SAC, efecto dentro del corredor y máximo local.
-      `;
+      quickReading.innerHTML = `<strong>Nota:</strong> los valores corresponden directamente a los ejercicios del paper. El efecto de fronteras se analiza por separado; el paper señala que puede reducir los beneficios alrededor de 30%.`;
     }
 
     const radarCtx = document.getElementById('radarChart');
@@ -915,7 +1274,7 @@
       data: { labels: [], datasets: [] },
       options: {
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: false, position: 'bottom' } },
         scales: {
           x: { ticks: { color: '#334155' }, grid: { display: false } },
           y: { ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } }
@@ -924,6 +1283,57 @@
     });
 
     function renderCharts(state) {
+      if (currentScenario === 'partial') {
+        const labels = ['Población', 'PIB pc', 'Productividad', 'Utilidad', 'Comercio', 'Salarios'];
+        primaryChartTitle.textContent = 'Efecto combinado del escenario 3';
+        primaryChartSubtitle.textContent = 'Comparación entre las 17 localizaciones tratadas y el efecto combinado neto reportado en la Tabla 11.';
+        secondaryChartTitle.textContent = 'Rango de impactos locales';
+        secondaryChartSubtitle.textContent = 'Valores máximo y mínimo reportados para cada indicador del escenario combinado.';
+
+        radarChart.data.labels = labels;
+        radarChart.data.datasets = [
+          {
+            label: 'Tratadas (17)',
+            data: [state.s.treated.population, state.s.treated.gdp, state.s.treated.productivity, state.s.treated.utility, state.s.treated.trade, state.s.treated.wages],
+            borderColor: '#0f172a',
+            backgroundColor: 'rgba(15,23,42,.22)',
+            pointBackgroundColor: '#0f172a'
+          },
+          {
+            label: 'Efecto combinado neto',
+            data: [state.s.population, state.s.gdp, state.s.productivity, state.s.utility, state.s.trade, state.s.wages],
+            borderColor: '#94a3b8',
+            backgroundColor: 'rgba(148,163,184,.18)',
+            pointBackgroundColor: '#94a3b8'
+          }
+        ];
+        radarChart.update();
+
+        barChart.options.plugins.legend.display = true;
+        barChart.data.labels = labels;
+        barChart.data.datasets = [
+          {
+            label: 'Máximo',
+            data: [state.s.maxPopulation, state.s.maxGdp, state.s.maxProductivity, state.s.maxUtility, state.s.maxTrade, state.s.maxWages],
+            backgroundColor: '#0f766e',
+            borderRadius: 8,
+          },
+          {
+            label: 'Mínimo',
+            data: [state.s.minPopulation, state.s.minGdp, state.s.minProductivity, state.s.minUtility, state.s.minTrade, state.s.minWages],
+            backgroundColor: '#b91c1c',
+            borderRadius: 8,
+          }
+        ];
+        barChart.update();
+        return;
+      }
+
+      primaryChartTitle.textContent = 'Gráfico del escenario';
+      primaryChartSubtitle.textContent = 'Impacto medio vs. máximo observado en cada variable.';
+      secondaryChartTitle.textContent = 'Resultados por territorio';
+      secondaryChartSubtitle.textContent = 'Bienestar anual estimado por territorio para el ejercicio seleccionado.';
+
       radarChart.data.labels = ['Trade', 'Población', 'PIB pc', 'Productividad', 'Salarios'];
       radarChart.data.datasets = [
         {
@@ -943,6 +1353,7 @@
       ];
       radarChart.update();
 
+      barChart.options.plugins.legend.display = false;
       barChart.data.labels = state.adjustedAreas.map(a => a.name);
       barChart.data.datasets = [{
         data: state.adjustedAreas.map(a => a.adjusted),
@@ -1247,6 +1658,7 @@
       const state = computeState();
       renderMetricCards(state);
       renderScenarioStory(state);
+      renderPaperScenarioInsight(state);
       renderMiniMetrics(state);
       renderCharts(state);
     }
@@ -1300,5 +1712,65 @@
     initArcGIS();
     updateAll();
   </script>
+
+<script>
+(function(){
+  const sel = document.getElementById('languageSelect');
+  if (!sel) return;
+  const labels = {
+    es: {method:'Metodología del modelo', maps:'Ver mapas'},
+    en: {method:'Model methodology', maps:'View maps'},
+    pt: {method:'Metodologia do modelo', maps:'Ver mapas'}
+  };
+  function setTopLabels(lang){
+    const l=labels[lang]||labels.es;
+    const b=document.getElementById('openMethodology'); if(b) b.textContent=l.method;
+    const a=document.querySelector('.hero a[href="#mapas"]'); if(a) a.textContent=l.maps;
+  }
+  function ensureTranslate(cb){
+    if (window.google && google.translate && google.translate.TranslateElement) return cb();
+    if (!document.getElementById('google-translate-loader')) {
+      window.googleTranslateElementInit = function(){
+        new google.translate.TranslateElement({pageLanguage:'es', includedLanguages:'es,en,pt', autoDisplay:false}, 'google_translate_element');
+        cb();
+      };
+      const holder=document.createElement('div'); holder.id='google_translate_element'; holder.style.display='none'; document.body.appendChild(holder);
+      const sc=document.createElement('script'); sc.id='google-translate-loader'; sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'; document.body.appendChild(sc);
+    } else { setTimeout(()=>ensureTranslate(cb),250); }
+  }
+  function applyLanguage(lang){
+    document.documentElement.lang=lang;
+    setTopLabels(lang);
+    if(lang==='es'){
+      document.cookie='googtrans=/es/es;path=/';
+      document.cookie='googtrans=/es/es;path=/;domain='+location.hostname;
+    } else {
+      document.cookie='googtrans=/es/'+lang+';path=/';
+      document.cookie='googtrans=/es/'+lang+';path=/;domain='+location.hostname;
+    }
+    ensureTranslate(function(){
+      let tries=0;
+      const timer=setInterval(function(){
+        const combo=document.querySelector('.goog-te-combo');
+        if(combo){ combo.value=lang; combo.dispatchEvent(new Event('change')); clearInterval(timer); }
+        if(++tries>20) clearInterval(timer);
+      },150);
+    });
+  }
+  // Spanish is always the default when the file is opened fresh.
+  try {
+    const cookie=document.cookie.match(/(?:^|; )googtrans=([^;]+)/);
+    if(!cookie || cookie[1] !== '/es/es') {
+      document.cookie='googtrans=/es/es;path=/';
+      if(location.hostname) document.cookie='googtrans=/es/es;path=/;domain='+location.hostname;
+    }
+  } catch(e) {}
+  sel.value='es';
+  setTopLabels('es');
+  sel.addEventListener('change', function(){ applyLanguage(this.value); });
+})();
+</script>
+
 </body>
 </html>
+

@@ -1802,6 +1802,10 @@ partial:{label:'3. Nuevo corredor de puerto a puerto',tag:'Corredor de puerto a 
     }
     async function initOpenMap() {
       localMapView = L.map('localMapMap', {preferCanvas:true}).setView([-22.5,-58.5],5);
+      // Separate panes keep reference geometry above every result layer.
+      localMapView.createPane('resultsPane').style.zIndex = 410;
+      localMapView.createPane('corridorPane').style.zIndex = 620;
+      localMapView.createPane('borderPane').style.zIndex = 630;
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(localMapView);
@@ -1829,9 +1833,12 @@ partial:{label:'3. Nuevo corredor de puerto a puerto',tag:'Corredor de puerto a 
           const response=await fetch(item.file);if(!response.ok)throw new Error(item.file);
           const data=await response.json();
           const layer={...item,_dashboardSearchTitle:`${item.scenario} ${item.title}`,_dashboardScenarioKey:detectScenario(item.scenario),_dashboardPersistent:isPersistentReferenceLayer(item.title)};
+          const isCorridor = layer._dashboardPersistent && data.features.some(f => /Line/.test(f.geometry && f.geometry.type));
+          const pane = layer._dashboardPersistent ? (isCorridor ? 'corridorPane' : 'borderPane') : 'resultsPane';
           layer._leaflet=L.geoJSON(data, {
-            style:feature=>featureStyle(item.renderer || {},feature),
-            pointToLayer:(feature,latlng)=>L.circleMarker(latlng,{radius:6,color:'#fff',weight:1.5,fillColor:mapColor(featureSymbol(item.renderer || {},feature.properties),'#e97722'),fillOpacity:1}),
+            pane,
+            style:feature=>isCorridor ? {pane,color:'#163f46',weight:5,opacity:1,lineCap:'round',lineJoin:'round'} : {...featureStyle(item.renderer || {},feature),pane},
+            pointToLayer:(feature,latlng)=>L.circleMarker(latlng,{pane,radius:8,color:'#ffffff',weight:3,fillColor:'#f97316',fillOpacity:1}),
             onEachFeature:(feature,shape)=>{
               const box=document.createElement('div');const title=document.createElement('strong');title.textContent=item.title;box.append(title);
               const table=document.createElement('table');
